@@ -1,0 +1,188 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Content Remove="wwwroot\css\.DS_Store" />
+    <Content Remove="wwwroot\css\animate.min.css" />
+    <Content Remove="wwwroot\css\bootstrap-grid.css" />
+    <Content Remove="wwwroot\css\bootstrap-grid.css.map" />
+    <Content Remove="wwwroot\css\bootstrap-grid.min.css" />
+    <Content Remove="wwwroot\css\bootstrap-grid.min.css.map" />
+    <Content Remove="wwwroot\css\bootstrap-reboot.css" />
+    <Content Remove="wwwroot\css\bootstrap-reboot.css.map" />
+    <Content Remove="wwwroot\css\bootstrap-reboot.min.css" />
+    <Content Remove="wwwroot\css\bootstrap-reboot.min.css.map" />
+    <Content Remove="wwwroot\css\bootstrap.css" />
+    <Content Remove="wwwroot\css\bootstrap.css.map" />
+    <Content Remove="wwwroot\css\bootstrap.min.css" />
+    <Content Remove="wwwroot\css\bootstrap.min.css.map" />
+    <Content Remove="wwwroot\css\default-skin.css" />
+    <Content Remove="wwwroot\css\font-awesome.min.css" />
+    <Content Remove="wwwroot\css\icomoon.css" />
+    <Content Remove="wwwroot\css\jquery-ui.css" />
+    <Content Remove="wwwroot\css\jquery.fancybox.min.css" />
+    <Content Remove="wwwroot\css\jquery.mCustomScrollbar.min.css" />
+    <Content Remove="wwwroot\css\meanmenu.css" />
+    <Content Remove="wwwroot\css\nice-select.css" />
+    <Content Remove="wwwroot\css\normalize.css" />
+    <Content Remove="wwwroot\css\owl.carousel.min.css" />
+    <Content Remove="wwwroot\css\responsive.css" />
+    <Content Remove="wwwroot\css\slick.css" />
+    <Content Remove="wwwroot\css\style.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.16">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.16" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="6.0.16">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="6.0.13" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="wwwroot\css\.DS_Store" />
+    <None Include="wwwroot\css\animate.min.css" />
+    <None Include="wwwroot\css\bootstrap-grid.css" />
+    <None Include="wwwroot\css\bootstrap-grid.css.map" />
+    <None Include="wwwroot\css\bootstrap-grid.min.css" />
+    <None Include="wwwroot\css\bootstrap-grid.min.css.map" />
+    <None Include="wwwroot\css\bootstrap-reboot.css" />
+    <None Include="wwwroot\css\bootstrap-reboot.css.map" />
+    <None Include="wwwroot\css\bootstrap-reboot.min.css" />
+    <None Include="wwwroot\css\bootstrap-reboot.min.css.map" />
+    <None Include="wwwroot\css\bootstrap.css" />
+    <None Include="wwwroot\css\bootstrap.css.map" />
+    <None Include="wwwroot\css\bootstrap.min.css" />
+    <None Include="wwwroot\css\bootstrap.min.css.map" />
+    <None Include="wwwroot\css\default-skin.css" />
+    <None Include="wwwroot\css\font-awesome.min.css" />
+    <None Include="wwwroot\css\icomoon.css" />
+    <None Include="wwwroot\css\jquery-ui.css" />
+    <None Include="wwwroot\css\jquery.fancybox.min.css" />
+    <None Include="wwwroot\css\jquery.mCustomScrollbar.min.css" />
+    <None Include="wwwroot\css\meanmenu.css" />
+    <None Include="wwwroot\css\nice-select.css" />
+    <None Include="wwwroot\css\normalize.css" />
+    <None Include="wwwroot\css\owl.carousel.min.css" />
+    <None Include="wwwroot\css\responsive.css" />
+    <None Include="wwwroot\css\slick.css" />
+    <None Include="wwwroot\css\style.css" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.eot" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.svg" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.ttf" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.woff" />
+    <None Include="wwwroot\fonts\fontawesome-webfont.woff2" />
+    <None Include="wwwroot\fonts\FontAwesome.otf" />
+    <None Include="wwwroot\fonts\IcoMoon-Free.ttf" />
+    <None Include="wwwroot\fonts\Poppins-Black.ttf" />
+    <None Include="wwwroot\fonts\Poppins-BlackItalic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-Bold.ttf" />
+    <None Include="wwwroot\fonts\Poppins-BoldItalic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-ExtraBold.ttf" />
+    <None Include="wwwroot\fonts\Poppins-ExtraBoldItalic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-ExtraLight.ttf" />
+    <None Include="wwwroot\fonts\Poppins-ExtraLightItalic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-Italic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-Light.ttf" />
+    <None Include="wwwroot\fonts\Poppins-LightItalic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-Medium.ttf" />
+    <None Include="wwwroot\fonts\Poppins-MediumItalic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-Regular.ttf" />
+    <None Include="wwwroot\fonts\Poppins-SemiBold.ttf" />
+    <None Include="wwwroot\fonts\Poppins-SemiBoldItalic.ttf" />
+    <None Include="wwwroot\fonts\Poppins-Thin.ttf" />
+    <None Include="wwwroot\fonts\Poppins-ThinItalic.ttf" />
+    <None Include="wwwroot\icon\call.png" />
+    <None Include="wwwroot\icon\email.png" />
+    <None Include="wwwroot\icon\facebook.png" />
+    <None Include="wwwroot\icon\instagram.png" />
+    <None Include="wwwroot\icon\linkedin.png" />
+    <None Include="wwwroot\icon\loc.png" />
+    <None Include="wwwroot\icon\Product-Sale-Flyer-Template-V-3-990x518.jpg" />
+    <None Include="wwwroot\icon\testimonial_qoute.png" />
+    <None Include="wwwroot\icon\travel-icon.png" />
+    <None Include="wwwroot\icon\travel-icon2.png" />
+    <None Include="wwwroot\icon\travel-icon3.png" />
+    <None Include="wwwroot\icon\travel-icon4.png" />
+    <None Include="wwwroot\icon\Twitter.png" />
+    <None Include="wwwroot\icon\wfe4.png" />
+    <None Include="wwwroot\images\.DS_Store" />
+    <None Include="wwwroot\images\about.png" />
+    <None Include="wwwroot\images\aboutbg.jpg" />
+    <None Include="wwwroot\images\banner.jpg" />
+    <None Include="wwwroot\images\banner1.png" />
+    <None Include="wwwroot\images\bg.png" />
+    <None Include="wwwroot\images\hea.png" />
+    <None Include="wwwroot\images\loading.gif" />
+    <None Include="wwwroot\images\logo.png" />
+    <None Include="wwwroot\images\menu_icon.png" />
+    <None Include="wwwroot\images\search_icon.png" />
+    <None Include="wwwroot\images\star.png" />
+    <None Include="wwwroot\images\top-icon.png" />
+    <None Include="wwwroot\images\top_arrow.png" />
+    <None Include="wwwroot\js\.DS_Store" />
+    <None Include="wwwroot\js\bootstrap.bundle.js" />
+    <None Include="wwwroot\js\bootstrap.bundle.js.map" />
+    <None Include="wwwroot\js\bootstrap.bundle.min.js" />
+    <None Include="wwwroot\js\bootstrap.bundle.min.js.map" />
+    <None Include="wwwroot\js\bootstrap.js" />
+    <None Include="wwwroot\js\bootstrap.js.map" />
+    <None Include="wwwroot\js\bootstrap.min.js" />
+    <None Include="wwwroot\js\bootstrap.min.js.map" />
+    <None Include="wwwroot\js\custom.js" />
+    <None Include="wwwroot\js\jquery-3.0.0.min.js" />
+    <None Include="wwwroot\js\jquery.mCustomScrollbar.concat.min.js" />
+    <None Include="wwwroot\js\jquery.min.js" />
+    <None Include="wwwroot\js\jquery.validate.js" />
+    <None Include="wwwroot\js\modernizer.js" />
+    <None Include="wwwroot\js\plugin.js" />
+    <None Include="wwwroot\js\popper.min.js" />
+    <None Include="wwwroot\js\revolution\.DS_Store" />
+    <None Include="wwwroot\js\revolution\assets\coloredbg.png" />
+    <None Include="wwwroot\js\revolution\assets\gridtile.png" />
+    <None Include="wwwroot\js\revolution\assets\gridtile_3x3.png" />
+    <None Include="wwwroot\js\revolution\assets\gridtile_3x3_white.png" />
+    <None Include="wwwroot\js\revolution\assets\gridtile_white.png" />
+    <None Include="wwwroot\js\revolution\assets\loader.gif" />
+    <None Include="wwwroot\js\revolution\css\closedhand.html" />
+    <None Include="wwwroot\js\revolution\css\layers.css" />
+    <None Include="wwwroot\js\revolution\css\navigation.css" />
+    <None Include="wwwroot\js\revolution\css\openhand.html" />
+    <None Include="wwwroot\js\revolution\css\settings.css" />
+    <None Include="wwwroot\js\revolution\fonts\pe-icon-7-stroke\css\pe-icon-7-stroke.css" />
+    <None Include="wwwroot\js\revolution\fonts\pe-icon-7-stroke\fonts\Pe-icon-7-strokebb1d.eot" />
+    <None Include="wwwroot\js\revolution\fonts\pe-icon-7-stroke\fonts\Pe-icon-7-strokebb1d.svg" />
+    <None Include="wwwroot\js\revolution\fonts\pe-icon-7-stroke\fonts\Pe-icon-7-strokebb1d.ttf" />
+    <None Include="wwwroot\js\revolution\fonts\pe-icon-7-stroke\fonts\Pe-icon-7-strokebb1d.woff" />
+    <None Include="wwwroot\js\revolution\fonts\pe-icon-7-stroke\fonts\Pe-icon-7-stroked41d.eot" />
+    <None Include="wwwroot\js\revolution\fonts\revicons\revicons90c6.eot" />
+    <None Include="wwwroot\js\revolution\fonts\revicons\revicons90c6.svg" />
+    <None Include="wwwroot\js\revolution\fonts\revicons\revicons90c6.ttf" />
+    <None Include="wwwroot\js\revolution\fonts\revicons\revicons90c6.woff" />
+    <None Include="wwwroot\js\revolution\js\.DS_Store" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.actions.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.carousel.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.kenburn.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.layeranimation.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.migration.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.navigation.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.parallax.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.slideanims.min.js" />
+    <None Include="wwwroot\js\revolution\js\extensions\revolution.extension.video.min.js" />
+    <None Include="wwwroot\js\revolution\js\jquery.themepunch.revolution.min.js" />
+    <None Include="wwwroot\js\revolution\js\jquery.themepunch.tools.min.js" />
+    <None Include="wwwroot\js\slider-setting.js" />
+  </ItemGroup>
+
+</Project>
