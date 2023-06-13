@@ -17,8 +17,6 @@ namespace Ali_Store.Controllers
     {
         private readonly StoreContext _context;
         protected readonly IHostingEnvironment _hostingEnvironment;
-
-
         public ProductsController(StoreContext context,IHostingEnvironment hostingEnvironment)
         {
             _context = context;
@@ -28,9 +26,12 @@ namespace Ali_Store.Controllers
         // GET: Products
         public async Task<IActionResult> Index()
         {
-            var U_id =  HttpContext.Session.GetInt32("User_id");
-            Console.WriteLine(U_id);
-              return _context.Products != null ? 
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            if (U_id == 1)
+                ViewBag.IsAdmin = true;
+            else
+                ViewBag.IsAdmin = false;
+            return _context.Products != null ? 
                           View(await _context.Products.ToListAsync()) :
                           Problem("Entity set 'StoreContext.Products'  is null.");
         }
@@ -41,18 +42,35 @@ namespace Ali_Store.Controllers
             if (id == null || _context.Products == null)
             {
                 return NotFound();
-            }
-
+            }           
             var product = await _context.Products
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
                 return NotFound();
             }
-
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            if (U_id == 1)
+                ViewBag.IsAdmin = true;
+            else
+                ViewBag.IsAdmin = false;
             return View(product);
         }
+        public async Task<IActionResult> Buy(int? id)
+        {
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            var User = _context.Users.Find(U_id);
+            var prduct = _context.Products.Find(id);
+            var reder = new Oreder()
+            {
+                User = User,
+                Product = prduct
+            };
+            _context.Oreders.Add(reder);
+            await _context.SaveChangesAsync();
+            return RedirectToAction("index");
 
+        }
         // GET: Products/Create
         public IActionResult Create()
         {

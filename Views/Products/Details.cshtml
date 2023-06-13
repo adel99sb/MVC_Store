@@ -43,6 +43,13 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    @if (ViewBag.IsAdmin)
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+    }   
+    else
+    {
+        <a asp-action="Buy" asp-route-id="@Model?.Id">Buy</a>
+    }
     <a asp-action="Index">Back to List</a>
 </div>

@@ -41,6 +41,12 @@
 <p>
     <a asp-action="Create">Sall New One</a>
 </p>
+@if (ViewBag.IsAdmin)
+{
+    <p>
+        <a asp-controller="_User" asp-action="index">Mange Users</a>
+    </p>
+}
 <body class="main-layout">
     <div class="brand_color">
         <div class="container">
@@ -77,6 +83,9 @@
                                 <i><img src="~/images/star.png" /></i>
                                 <i><img src="~/images/star.png" /></i>
                                 <i><img src="~/images/star.png" /></i>
+                                <span>
+                                    <a asp-action="Details" asp-route-id="@item.Id">Show More</a>
+                                </span>                                
                             </div>
                         </div>
                     }
