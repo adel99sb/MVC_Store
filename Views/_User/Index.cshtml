@@ -19,6 +19,9 @@
                 @Html.DisplayNameFor(model => model.E_Mail)
             </th>
             <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
                 @Html.DisplayNameFor(model => model.Password)
             </th>
             <th></th>
@@ -34,10 +37,15 @@
                 @Html.DisplayFor(modelItem => item.E_Mail)
             </td>
             <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td>
                    ******
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                <button>
+                        <a asp-action="Edit" asp-route-id="@item.Id">Edit</a>
+                    </button> |
                 <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
                 <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
             </td>

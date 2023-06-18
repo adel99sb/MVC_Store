@@ -59,7 +59,14 @@
             </div>
         </div>
     </div>
-
+    @if (ViewBag.iSlaptop)
+    {
+        @using (Html.BeginForm("index"))
+        {
+            <input type="text" id="GoodFor" name="GoodFor" placeholder="decript what yu wnt"/>
+            <input type="submit" value="Submit" />
+        }
+    }
     <!-- brand -->
     <div class="brand">
         <div class="container">
@@ -67,27 +74,67 @@
         <div class="brand-bg">
             <div class="container">
                 <div class="row">
-                    @foreach (var item in Model)
+                    @foreach (var item in Model.OrderBy(x => x.Date))
                     {
-                        <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
-                            <div class="brand_box">
-                                <img src="~/images/@item.Pic" alt="img" />
-                                <h3>$<strong class="red">@Html.DisplayFor(modelItem => item.Price)</strong></h3>
-                                <span>
-                                    @Html.DisplayFor(modelItem => item.Name)
-                                </span>
-                                <span>
-                                    @Html.DisplayFor(modelItem => item.Model)
-                                </span>
-                                <i><img src="~/images/star.png" /></i>
-                                <i><img src="~/images/star.png" /></i>
-                                <i><img src="~/images/star.png" /></i>
-                                <i><img src="~/images/star.png" /></i>
-                                <span>
-                                    <a asp-action="Details" asp-route-id="@item.Id">Show More</a>
-                                </span>                                
+                        @if (ViewBag.IsAdmin)
+                        {
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
+                                <div class="brand_box">
+                                    <img src="~/images/@item.Pic" alt="img" />
+                                    <h3>$<strong class="red">@Html.DisplayFor(modelItem => item.Price)</strong></h3>
+                                    <span>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </span>
+                                    <span>
+                                        @Html.DisplayFor(modelItem => item.Model)
+                                    </span>
+                                    <i><img src="~/images/star.png" /></i>
+                                    <i><img src="~/images/star.png" /></i>
+                                    <i><img src="~/images/star.png" /></i>
+                                    <i><img src="~/images/star.png" /></i>
+                                    @if (item.IsSall)
+                                    {
+                                        <span>Sold</span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            <a asp-action="Details" asp-route-id="@item.Id">Show More</a>
+                                        </span>
+                                    }
+                                </div>
                             </div>
-                        </div>
+                        }
+                        else
+                        @if (item.IsApproval)
+                        {
+                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
+                                <div class="brand_box">
+                                    <img src="~/images/@item.Pic" alt="img" />
+                                    <h3>$<strong class="red">@Html.DisplayFor(modelItem => item.Price)</strong></h3>
+                                    <span>
+                                        @Html.DisplayFor(modelItem => item.Name)
+                                    </span>
+                                    <span>
+                                        @Html.DisplayFor(modelItem => item.Model)
+                                    </span>                                
+                                    <i><img src="~/images/star.png" /></i>
+                                    <i><img src="~/images/star.png" /></i>
+                                    <i><img src="~/images/star.png" /></i>
+                                    <i><img src="~/images/star.png" /></i>
+                                    @if (item.IsSall)
+                                    {
+                                        <span>Sold</span>
+                                    }
+                                    else
+                                    {
+                                        <span>
+                                            <a asp-action="Details" asp-route-id="@item.Id">Show More</a>
+                                        </span>
+                                    }                                                              
+                                </div>
+                            </div>
+                        }
                     }
                 </div>
             </div>
@@ -122,5 +169,15 @@
                 $(this).removeClass('transition');
             });
         });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#mySelect').change(function () {
+                var selectedValue = $(this).val();
+                console.log(selectedValue);
+                // do something with the selected value
+            });
+        });
+
     </script>
 </body>

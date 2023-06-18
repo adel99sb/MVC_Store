@@ -24,16 +24,57 @@ namespace Ali_Store.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? CatgType)
         {
+            ViewBag.iSlaptop = false;
             var U_id = HttpContext.Session.GetInt32("User_id");
             if (U_id == 1)
                 ViewBag.IsAdmin = true;
             else
                 ViewBag.IsAdmin = false;
-            return _context.Products != null ? 
+            switch (CatgType)
+            {
+                case 1:
+                    {
+                        ViewBag.iSlaptop = true;
+                        return _context.Products != null ?
+                                                    View(await _context.Products.Where(p => p.Type == "Laptob").ToListAsync()) :
+                                                    Problem("Entity set 'StoreContext.Products'  is null.");
+                    }
+
+                case 2:
+                    return _context.Products != null ?
+                          View(await _context.Products.Where(p => p.Type == "Mobail").ToListAsync()) :
+                          Problem("Entity set 'StoreContext.Products'  is null.");
+                case 3:
+                    return _context.Products != null ?
+                          View(await _context.Products.Where(p => p.Type == "Extentions").ToListAsync()) :
+                          Problem("Entity set 'StoreContext.Products'  is null.");
+                case 4:
+                    return _context.Products != null ?
                           View(await _context.Products.ToListAsync()) :
                           Problem("Entity set 'StoreContext.Products'  is null.");
+                default:
+                    return _context.Products != null ?
+                          View(await _context.Products.ToListAsync()) :
+                          Problem("Entity set 'StoreContext.Products'  is null.");
+                    break;
+            }
+        }
+        [HttpPost]
+        public async Task<IActionResult> Index(string? GoodFor)
+        {
+            ViewBag.iSlaptop = true;
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            if (U_id == 1)
+                ViewBag.IsAdmin = true;
+            else
+                ViewBag.IsAdmin = false;
+            
+                        return _context.Products != null ?
+                                View(await _context.Products.Where(p => p.Type == "Laptob")
+                                .Where(p => p.GoodFor.Contains(GoodFor)).ToListAsync()) :
+                                Problem("Entity set 'StoreContext.Products'  is null.");                                  
         }
 
         // GET: Products/Details/5
@@ -60,13 +101,19 @@ namespace Ali_Store.Controllers
         {
             var U_id = HttpContext.Session.GetInt32("User_id");
             var User = _context.Users.Find(U_id);
+            var AUser = _context.Users.Find(1);
             var prduct = _context.Products.Find(id);
+            prduct.IsSall = true;
+            User.Amount -= prduct.Price;
+            AUser.Amount += prduct.Price;
             var reder = new Oreder()
             {
                 User = User,
                 Product = prduct
-            };
+            };            
             _context.Oreders.Add(reder);
+            _context.Products.Update(prduct);
+            _context.Users.Update(User);
             await _context.SaveChangesAsync();
             return RedirectToAction("index");
 
@@ -82,7 +129,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Type,Model,Price,Pic")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Type,Model,Price,Pic,GoodFor")] Product product)
         {
             if (Request.Form.Files.Count != 0)
             {
@@ -131,7 +178,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic,GoodFor,IsApproval")] Product product)
         {
             if (id != product.Id)
             {

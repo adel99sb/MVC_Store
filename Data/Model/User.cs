@@ -6,5 +6,6 @@
         public string Name { get; set; }
         public string E_Mail { get; set; }
         public string Password { get; set; }
+        public float Amount { get; set; }
     }
 }

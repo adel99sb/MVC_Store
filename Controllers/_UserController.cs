@@ -13,7 +13,7 @@ namespace Ali_Store.Controllers
 {
     public class _UserController : Controller
     {
-        private readonly StoreContext _context;
+        private readonly StoreContext _context ;
 
         public _UserController(StoreContext context)
         {
@@ -113,7 +113,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,E_Mail,Password")] _User _User)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,E_Mail,Password,Amount")] _User _User)
         {
             if (id != _User.Id)
             {
