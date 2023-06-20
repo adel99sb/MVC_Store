@@ -39,12 +39,15 @@
 <h1>Index</h1>
 
 <p>
-    <a asp-action="Create">Sall New One</a>
+   
+    <button class="btn btn-info"> <a asp-action="Create">Sall New One</a></button>
+
 </p>
 @if (ViewBag.IsAdmin)
 {
+    <br />
     <p>
-        <a asp-controller="_User" asp-action="index">Mange Users</a>
+        <button class="btn btn-warning">  <a asp-controller="_User" asp-action="index">Mange Users</a></button>
     </p>
 }
 <body class="main-layout">
@@ -94,12 +97,12 @@
                                     <i><img src="~/images/star.png" /></i>
                                     @if (item.IsSall)
                                     {
-                                        <span>Sold</span>
+                                        <span><strong class="red">Sold</strong></span>
                                     }
                                     else
                                     {
                                         <span>
-                                            <a asp-action="Details" asp-route-id="@item.Id">Show More</a>
+                                            <button class="btn btn-info">   <a asp-action="Details" asp-route-id="@item.Id">Show More</a></button>
                                         </span>
                                     }
                                 </div>

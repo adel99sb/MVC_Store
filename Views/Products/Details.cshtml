@@ -51,11 +51,11 @@
 <div>
     @if (ViewBag.IsAdmin)
     {
-        <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a>
+       <button class="btn btn-info"> <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a></button>
     }   
     else
     {
-        <a asp-action="Buy" asp-route-id="@Model?.Id">Buy</a>
+      <button class="btn btn-info">  <a asp-action="Buy" asp-route-id="@Model?.Id">Buy</a></button>
     }
-    <a asp-action="Index">Back to List</a>
+    <button class="btn btn-info">  <a asp-action="Index">Back to List</a></button>
 </div>
