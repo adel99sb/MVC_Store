@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Ali_Store.Data.Context;
+﻿using Ali_Store.Data.Context;
 using Ali_Store.Data.Model;
-using Microsoft.AspNetCore;
-using Microsoft.Extensions.Hosting.Internal;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
 
 namespace Ali_Store.Controllers
@@ -103,15 +96,14 @@ namespace Ali_Store.Controllers
             var User = _context.Users.Find(U_id);
             var AUser = _context.Users.Find(1);
             var prduct = _context.Products.Find(id);
-            prduct.IsSall = true;
+            //prduct.IsSall = true;
             User.Amount -= prduct.Price;
             AUser.Amount += prduct.Price;
-            var reder = new Oreder()
+            var reder = new Order()
             {
-                User = User,
-                Product = prduct
+                User = User
             };            
-            _context.Oreders.Add(reder);
+            _context.Orders.Add(reder);
             _context.Products.Update(prduct);
             _context.Users.Update(User);
             await _context.SaveChangesAsync();

@@ -77,7 +77,7 @@
         <div class="brand-bg">
             <div class="container">
                 <div class="row">
-                    @foreach (var item in Model.OrderBy(x => x.Date))
+                    @foreach (var item in Model.OrderBy(x => x.CreatedAt))
                     {
                         @if (ViewBag.IsAdmin)
                         {
@@ -95,10 +95,10 @@
                                     <i><img src="~/images/star.png" /></i>
                                     <i><img src="~/images/star.png" /></i>
                                     <i><img src="~/images/star.png" /></i>
-                                    @if (item.IsSall)
+                                    @* @if (item.IsSall)
                                     {
                                         <span><strong class="red">Sold</strong></span>
-                                    }
+                                    } *@
                                     else
                                     {
                                         <span>
@@ -125,10 +125,10 @@
                                     <i><img src="~/images/star.png" /></i>
                                     <i><img src="~/images/star.png" /></i>
                                     <i><img src="~/images/star.png" /></i>
-                                    @if (item.IsSall)
+                                    @* @if (item.IsSall)
                                     {
                                         <span>Sold</span>
-                                    }
+                                    } *@
                                     else
                                     {
                                         <span>

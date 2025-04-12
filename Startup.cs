@@ -1,6 +1,5 @@
 ﻿using Ali_Store.Data.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.FileProviders;
 
 namespace Ali_Store
 {
@@ -37,7 +36,6 @@ namespace Ali_Store
             app.UseStaticFiles();
             app.UseSession();
             app.UseHttpsRedirection();
-            app.UseStaticFiles();
 
             app.UseRouting();
 

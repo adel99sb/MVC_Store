@@ -1,13 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.EntityFrameworkCore;
-using Ali_Store.Data.Context;
+﻿using Ali_Store.Data.Context;
 using Ali_Store.Data.Model;
-using Microsoft.AspNetCore.Session;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace Ali_Store.Controllers
 {
@@ -78,7 +72,7 @@ namespace Ali_Store.Controllers
             var Res = _context.Users.ToList();
             foreach (var item in Res)
             {
-                if (_User.E_Mail == item.E_Mail && _User.Password == item.Password)
+                if (_User.EMail == item.EMail && _User.Password == item.Password)
                 {
                     id = item.Id;
                     break;

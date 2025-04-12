@@ -33,11 +33,15 @@ namespace Ali_Store.Migrations
                     b.Property<float>("Amount")
                         .HasColumnType("real");
 
-                    b.Property<string>("E_Mail")
+                    b.Property<string>("EMail")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("FirstName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LastName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -50,30 +54,7 @@ namespace Ali_Store.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Ali_Store.Data.Model.Oreder", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Oreders");
-                });
-
-            modelBuilder.Entity("Ali_Store.Data.Model.Product", b =>
+            modelBuilder.Entity("Ali_Store.Data.Model.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -84,14 +65,65 @@ namespace Ali_Store.Migrations
                     b.Property<DateTime>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("NumberOfItems")
+                        .HasColumnType("int");
+
+                    b.Property<float>("TotalPrice")
+                        .HasColumnType("real");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Ali_Store.Data.Model.OrderItem", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("Ali_Store.Data.Model.Product", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("GoodFor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsApproval")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsSall")
                         .HasColumnType("bit");
 
                     b.Property<string>("Model")
@@ -115,9 +147,84 @@ namespace Ali_Store.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("Product");
                 });
 
-            modelBuilder.Entity("Ali_Store.Data.Model.Oreder", b =>
+            modelBuilder.Entity("Ali_Store.Data.Model.Rate", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("int");
+
+                    b.Property<float>("RateTo5")
+                        .HasColumnType("real");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Rates");
+                });
+
+            modelBuilder.Entity("Ali_Store.Data.Model.Offer", b =>
+                {
+                    b.HasBaseType("Ali_Store.Data.Model.Product");
+
+                    b.Property<float>("NewPrice")
+                        .HasColumnType("real");
+
+                    b.HasDiscriminator().HasValue("Offer");
+                });
+
+            modelBuilder.Entity("Ali_Store.Data.Model.Order", b =>
+                {
+                    b.HasOne("Ali_Store.Data.Model._User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Ali_Store.Data.Model.OrderItem", b =>
+                {
+                    b.HasOne("Ali_Store.Data.Model.Order", "Order")
+                        .WithMany()
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Ali_Store.Data.Model.Product", "Product")
+                        .WithMany()
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("Ali_Store.Data.Model.Rate", b =>
                 {
                     b.HasOne("Ali_Store.Data.Model.Product", "Product")
                         .WithMany()

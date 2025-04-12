@@ -10,8 +10,7 @@ namespace Ali_Store.Data.Model
         public string Model { get; set; }
         public string GoodFor { get; set; }
         public float Price { get; set; }
-        public DateTime Date { get; set; }  = DateTime.Now;
-        public bool IsSall { get; set; } = false;
+        public DateTime CreatedAt { get; set; }  = DateTime.Now;
         public bool IsApproval { get; set; } = false;
         public string? Pic { get; set; }
         [NotMapped]
