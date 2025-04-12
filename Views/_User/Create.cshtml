@@ -31,17 +31,24 @@ height: 100%;
                 <form asp-action="Create">
                     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             
-                    <!-- Name input -->
+                    <!-- First Name input -->
                     <div class="form-outline mb-4">
-                        <input id="form3Example3" class="form-control form-control-lg"
-                               placeholder="Enter a valid name" asp-for="FirstName" />
-                        <label class="form-label" for="form3Example3" asp-for="FirstName">User Name</label>
+                        <input id="form3Example2" class="form-control form-control-lg"
+                               placeholder="Enter a valid name" asp-for="FirstName" name="FirstName" />
+                        <label class="form-label" for="form3Example2" asp-for="FirstName">First Name</label>
                         <span asp-validation-for="FirstName" class="text-danger"></span>
+                    </div>
+                    <!-- Last Name input -->
+                    <div class="form-outline mb-4">
+                        <input id="form3Example5" class="form-control form-control-lg"
+                               placeholder="Enter a valid name" asp-for="LastName" name="LastName" />
+                        <label class="form-label" for="form3Example5" asp-for="LastName">Last Name</label>
+                        <span asp-validation-for="LastName" class="text-danger"></span>
                     </div>
                     <!-- Email input -->
                     <div class="form-outline mb-4">
                         <input type="email" id="form3Example3" class="form-control form-control-lg"
-                               placeholder="Enter a valid email address" asp-for="EMail" />
+                               placeholder="Enter a valid email address" asp-for="EMail" name="EMail" />
                         <label class="form-label" for="form3Example3" asp-for="EMail">Email address</label>
                         <span asp-validation-for="EMail" class="text-danger"></span>
                     </div>
@@ -49,7 +56,7 @@ height: 100%;
                     <!-- Password input -->
                     <div class="form-outline mb-3">
                         <input type="password" id="form3Example4" class="form-control form-control-lg"
-                               placeholder="Enter password" asp-for="Password" />
+                               placeholder="Enter password" asp-for="Password" name="Password" />
                         <label class="form-label" for="form3Example4" asp-for="Password">Password</label>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>

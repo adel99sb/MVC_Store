@@ -55,7 +55,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,E_Mail,Password")] _User _User)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,EMail,Password")] _User _User)
         {
             if (ModelState.IsValid)
             {
@@ -66,7 +66,7 @@ namespace Ali_Store.Controllers
             return View(_User);
         }
         [HttpPost]
-        public async Task<IActionResult> Login([Bind("Id,Name,E_Mail,Password")] _User _User)
+        public async Task<IActionResult> Login([Bind("Id,EMail,Password")] _User _User)
         {
             int id = 0;
             var Res = _context.Users.ToList();
