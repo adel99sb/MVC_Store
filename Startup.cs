@@ -23,8 +23,11 @@ namespace Ali_Store
         {
             if (env.IsDevelopment())
             {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseDeveloperExceptionPage(); // shows detailed errors
+            }
+            else
+            {
+                app.UseExceptionHandler("/Home/Error"); // fallback for production
                 app.UseHsts();
             }
             //    app.UseStaticFiles(new StaticFileOptions
