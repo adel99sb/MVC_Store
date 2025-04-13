@@ -17,29 +17,24 @@ namespace Ali_Store.Controllers
         }
 
         // GET: Products
-        public async Task<IActionResult> Index(int? CatgType)
+        public async Task<IActionResult> Index(string? CatgType)
         {
             ViewBag.iSlaptop = false;
             var U_id = HttpContext.Session.GetInt32("User_id");
+            if(U_id == null) {
+                return RedirectToAction("Login", "");
+            }
             ViewBag.IsAdmin = U_id == 1;
 
             IQueryable<Product> productsQuery = _context.Products.Include(p => p.Rates);
 
-            if (CatgType.HasValue)
+            if (CatgType != null && CatgType != "All")
             {
-                switch (CatgType.Value)
+                if(CatgType == "Laptob") 
                 {
-                    case 1:
-                        ViewBag.iSlaptop = true;
-                        productsQuery = productsQuery.Where(p => p.Type == "Laptob");
-                        break;
-                    case 2:
-                        productsQuery = productsQuery.Where(p => p.Type == "Mobail");
-                        break;
-                    case 3:
-                        productsQuery = productsQuery.Where(p => p.Type == "Extentions");
-                        break;
+                    ViewBag.iSlaptop = true;
                 }
+                    productsQuery = productsQuery.Where(p => p.Type == CatgType);
             }
 
             var products = await productsQuery.ToListAsync();
@@ -51,21 +46,24 @@ namespace Ali_Store.Controllers
 
             return View(products);
         }
-        [HttpPost]
-        public async Task<IActionResult> Index(string? GoodFor)
-        {
-            ViewBag.iSlaptop = true;
-            var U_id = HttpContext.Session.GetInt32("User_id");
-            if (U_id == 1)
-                ViewBag.IsAdmin = true;
-            else
-                ViewBag.IsAdmin = false;
+        // [HttpPost]
+        // public async Task<IActionResult> Index(string? GoodFor)
+        // {
+        //     ViewBag.iSlaptop = true;
+        //     var U_id = HttpContext.Session.GetInt32("User_id");
+            // if(U_id == null) {
+            //     return RedirectToAction("Login", "");
+            // }
+        //     if (U_id == 1)
+        //         ViewBag.IsAdmin = true;
+        //     else
+        //         ViewBag.IsAdmin = false;
             
-                        return _context.Products != null ?
-                                View(await _context.Products.Where(p => p.Type == "Laptob")
-                                .Where(p => p.GoodFor.Contains(GoodFor)).ToListAsync()) :
-                                Problem("Entity set 'StoreContext.Products'  is null.");                                  
-        }
+        //                 return _context.Products != null ?
+        //                         View(await _context.Products.Where(p => p.Type == "Laptob")
+        //                         .Where(p => p.GoodFor.Contains(GoodFor)).ToListAsync()) :
+        //                         Problem("Entity set 'StoreContext.Products'  is null.");                                  
+        // }
 
         // GET: Products/Details/[id]
         public async Task<IActionResult> Details(int? id)
@@ -83,6 +81,9 @@ namespace Ali_Store.Controllers
                 return NotFound();
             }
             var U_id = HttpContext.Session.GetInt32("User_id");
+            if(U_id == null) {
+                return RedirectToAction("Login", "");
+            }
             if (U_id == 1)
                 ViewBag.IsAdmin = true;
             else
@@ -92,9 +93,8 @@ namespace Ali_Store.Controllers
         public async Task<IActionResult> Buy(int? id)
         {
             var U_id = HttpContext.Session.GetInt32("User_id");
-            if (U_id == null)
-            {
-                return NotFound("User not found.");
+            if(U_id == null) {
+                return RedirectToAction("Login", "");
             }
             var User = _context.Users.Find(U_id);
             var AUser = _context.Users.Find(1);
