@@ -19,38 +19,25 @@ namespace Ali_Store.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsApproval",
-                table: "Products",
-                type: "bit",
-                nullable: true);
-
-            migrationBuilder.AddColumn<bool>(
-                name: "IsSall",
-                table: "Products",
-                type: "bit",
-                nullable: true);
+            // migrationBuilder.AddColumn<bool>(
+            //     name: "IsSall",
+            //     table: "Products",
+            //     type: "bit",
+            //     nullable: true);
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "IsApproval",
-                table: "Products");
 
-            migrationBuilder.DropColumn(
-                name: "IsSall",
-                table: "Products");
-
-            migrationBuilder.AlterColumn<string>(
-                name: "Discriminator",
-                table: "Products",
-                type: "nvarchar(max)",
-                nullable: false,
-                oldClrType: typeof(string),
-                oldType: "nvarchar(8)",
-                oldMaxLength: 8);
+            // migrationBuilder.AlterColumn<string>(
+            //     name: "Discriminator",
+            //     table: "Products",
+            //     type: "nvarchar(max)",
+            //     nullable: false,
+            //     oldClrType: typeof(string),
+            //     oldType: "nvarchar(8)",
+            //     oldMaxLength: 8);
         }
     }
 }

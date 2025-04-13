@@ -48,7 +48,7 @@
     </p>
     <br />
     <p>
-        <button class="btn btn-warning">  <a asp-controller="_User" asp-action="index">Mange Users</a></button>
+        <button class="btn btn-warning">  <a asp-controller="_User" asp-action="index">Manage Users</a></button>
     </p>
 }
 <body class="main-layout">
@@ -80,7 +80,7 @@
                 <div class="row">
                     @foreach (var item in Model.OrderBy(x => x.CreatedAt))
                     {
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
+                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
                                 <div class="brand_box">
                                     <img src="~/images/@item.Pic" alt="img" />
                                     @if (item.NewPrice != null)
@@ -167,3 +167,24 @@
 
     </script>
 </body>
+<style>
+    .brand_box {
+        border: 1px solid #ddd;
+        padding: 15px;
+        margin-bottom: 20px;
+        border-radius: 5px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .brand_box img {
+        max-width: 100%;
+        height: auto;
+        margin-bottom: 10px;
+    }
+    .btn-info a, .btn-warning a {
+        color: white;
+        text-decoration: none;
+    }
+    .btn-info a:hover, .btn-warning a:hover {
+        color: #ddd;
+    }
+</style>
