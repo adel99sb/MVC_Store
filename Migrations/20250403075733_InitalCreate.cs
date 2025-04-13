@@ -22,6 +22,7 @@ namespace Ali_Store.Migrations
                     Price = table.Column<float>(type: "real", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     IsApproval = table.Column<bool>(type: "bit", nullable: false),
+                    IsSall = table.Column<bool>(type: "bit", nullable: false),
                     Pic = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     NewPrice = table.Column<float>(type: "real", nullable: true)

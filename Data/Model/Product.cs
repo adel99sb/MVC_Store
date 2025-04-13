@@ -11,9 +11,12 @@ namespace Ali_Store.Data.Model
         public string GoodFor { get; set; }
         public float Price { get; set; }
         public DateTime CreatedAt { get; set; }  = DateTime.Now;
-        public bool IsApproval { get; set; } = false;
+        public bool? IsApproval { get; set; } = true;
+        public bool? IsSall { get; set; } = false;
         public string? Pic { get; set; }
         [NotMapped]
         public IFormFile? PicPath { get; set; }
+
+        public ICollection<Rate> Rates { get; set; } = new List<Rate>();
     }
 }

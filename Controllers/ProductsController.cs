@@ -78,6 +78,7 @@ namespace Ali_Store.Controllers
                 return NotFound();
             }           
             var product = await _context.Products
+                .Include(p => p.Rates)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -93,15 +94,37 @@ namespace Ali_Store.Controllers
         public async Task<IActionResult> Buy(int? id)
         {
             var U_id = HttpContext.Session.GetInt32("User_id");
+            if (U_id == null)
+            {
+                return NotFound("User not found.");
+            }
             var User = _context.Users.Find(U_id);
             var AUser = _context.Users.Find(1);
             var prduct = _context.Products.Find(id);
-            //prduct.IsSall = true;
+
+            if (User == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            if (AUser == null)
+            {
+                return NotFound("Admin user not found.");
+            }
+
+            if (prduct == null)
+            {
+                return NotFound("Product not found.");
+            }
+            
+            prduct.IsSall = true;
             User.Amount -= prduct.Price;
             AUser.Amount += prduct.Price;
             var reder = new Order()
             {
-                User = User
+                User = User,
+                TotalPrice = prduct.Price,
+                Date = DateTime.Now
             };            
             _context.Orders.Add(reder);
             _context.Products.Update(prduct);
@@ -170,7 +193,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic,GoodFor,IsApproval")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic,GoodFor")] Product product)
         {
             if (id != product.Id)
             {

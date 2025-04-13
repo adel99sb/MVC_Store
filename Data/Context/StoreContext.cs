@@ -15,6 +15,10 @@ namespace Ali_Store.Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Rate>()
+                .HasOne(r => r.Product)
+                .WithMany(p => p.Rates)
+                .HasForeignKey(r => r.ProductId);
             //modelBuilder.Entity<Order>()
             //    .HasOne(o => o.) // Define the navigation property
             //    .WithMany(u => u.) // Define the inverse relationship

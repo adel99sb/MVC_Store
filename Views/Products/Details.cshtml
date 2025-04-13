@@ -55,7 +55,49 @@
     }   
     else
     {
-      <button class="btn btn-info">  <a asp-action="Buy" asp-route-id="@Model?.Id">Buy</a></button>
+        if(Model.IsSall == false)
+        {
+            <button class="btn btn-info">  <a asp-action="Buy" asp-route-id="@Model?.Id">Buy</a></button>
+        }
+        else
+        {
+            <span>Sold</span>
+        }
     }
     <button class="btn btn-info">  <a asp-action="Index">Back to List</a></button>
 </div>
+
+<div>
+    <h4>Ratings</h4>
+    <hr />
+    <div>
+        @if (Model.Rates != null && Model.Rates.Any())
+        {
+            <ul>
+                @foreach (var rating in Model.Rates)
+                {
+                    <li>@rating.User.FirstName: @rating.RateTo5/5 - @rating.Comment</li>
+                }
+            </ul>
+        }
+        else
+        {
+            <p>No ratings yet.</p>
+        }
+    </div>
+    <div>
+        <h5>Add a Rating</h5>
+        <form asp-action="AddRating" method="post">
+            <div class="form-group">
+                <label for="Score">Score (1-5):</label>
+                <input type="number" id="Score" name="Score" min="1" max="5" class="form-control" required />
+            </div>
+            <div class="form-group">
+                <label for="Comment">Comment:</label>
+                <textarea id="Comment" name="Comment" class="form-control"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit Rating</button>
+        </form>
+    </div>
+</div>
+

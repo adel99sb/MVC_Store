@@ -128,6 +128,9 @@ namespace Ali_Store.Migrations
                     b.Property<bool>("IsApproval")
                         .HasColumnType("bit");
 
+                    b.Property<bool>("IsSall")
+                        .HasColumnType("bit");
+
                     b.Property<string>("Model")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

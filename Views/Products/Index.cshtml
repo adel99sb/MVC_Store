@@ -98,18 +98,17 @@
                                     @* @if (item.IsSall)
                                     {
                                         <span><strong class="red">Sold</strong></span>
-                                    } *@
+                                    } 
                                     else
-                                    {
+                                    {*@
                                         <span>
                                             <button class="btn btn-info">   <a asp-action="Details" asp-route-id="@item.Id">Show More</a></button>
                                         </span>
-                                    }
+                                    @* } *@
                                 </div>
                             </div>
                         }
                         else
-                        @if (item.IsApproval)
                         {
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
                                 <div class="brand_box">
@@ -128,13 +127,13 @@
                                     @* @if (item.IsSall)
                                     {
                                         <span>Sold</span>
-                                    } *@
+                                    } 
                                     else
-                                    {
+                                    {*@
                                         <span>
                                             <a asp-action="Details" asp-route-id="@item.Id">Show More</a>
                                         </span>
-                                    }                                                              
+                                    @* } *@
                                 </div>
                             </div>
                         }
