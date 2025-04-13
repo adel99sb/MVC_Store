@@ -67,7 +67,7 @@ namespace Ali_Store.Controllers
                                 Problem("Entity set 'StoreContext.Products'  is null.");                                  
         }
 
-        // GET: Products/Details/5
+        // GET: Products/Details/[id]
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null || _context.Products == null)
@@ -114,22 +114,36 @@ namespace Ali_Store.Controllers
             {
                 return NotFound("Product not found.");
             }
-            
+            var OPrice = prduct.Price;
             prduct.IsSall = true;
-            User.Amount -= prduct.Price;
-            AUser.Amount += prduct.Price;
+            if(prduct.NewPrice != null)
+            {
+                OPrice = (float)prduct.NewPrice;
+            }
+            User.Amount -= OPrice;
+            AUser.Amount += OPrice;
+            
             var reder = new Order()
             {
                 User = User,
-                TotalPrice = prduct.Price,
+                TotalPrice = OPrice,
                 Date = DateTime.Now
-            };            
-            _context.Orders.Add(reder);
+            };
+            
+            var Order = _context.Orders.Add(reder);
+            await _context.SaveChangesAsync();
+
+            var OrderItem = new OrderItem()
+            {
+                OrderId = Order.Entity.Id,
+                ProductId = prduct.Id
+            };
+            _context.OrderItems.Add(OrderItem);
             _context.Products.Update(prduct);
             _context.Users.Update(User);
             await _context.SaveChangesAsync();
-            return RedirectToAction("index");
 
+            return RedirectToAction("index");
         }
         // GET: Products/Create
         public IActionResult Create()
