@@ -4,6 +4,7 @@ using Ali_Store.Data.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Ali_Store.Migrations
 {
     [DbContext(typeof(StoreContext))]
-    partial class StoreContextModelSnapshot : ModelSnapshot
+    [Migration("20250413130911_AddOfferTable")]
+    partial class AddOfferTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,27 +24,6 @@ namespace Ali_Store.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("Ali_Store.Data.Model.Offer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<float>("Price")
-                        .HasColumnType("real");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("Offers");
-                });
 
             modelBuilder.Entity("Ali_Store.Data.Model.Order", b =>
                 {
@@ -104,6 +86,11 @@ namespace Ali_Store.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
                     b.Property<string>("GoodFor")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -135,6 +122,10 @@ namespace Ali_Store.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Products");
+
+                    b.HasDiscriminator().HasValue("Product");
+
+                    b.UseTphMappingStrategy();
                 });
 
             modelBuilder.Entity("Ali_Store.Data.Model.Rate", b =>
@@ -204,13 +195,12 @@ namespace Ali_Store.Migrations
 
             modelBuilder.Entity("Ali_Store.Data.Model.Offer", b =>
                 {
-                    b.HasOne("Ali_Store.Data.Model.Product", "Product")
-                        .WithMany("Offers")
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.HasBaseType("Ali_Store.Data.Model.Product");
 
-                    b.Navigation("Product");
+                    b.Property<float>("NewPrice")
+                        .HasColumnType("real");
+
+                    b.HasDiscriminator().HasValue("Offer");
                 });
 
             modelBuilder.Entity("Ali_Store.Data.Model.Order", b =>
@@ -264,8 +254,6 @@ namespace Ali_Store.Migrations
 
             modelBuilder.Entity("Ali_Store.Data.Model.Product", b =>
                 {
-                    b.Navigation("Offers");
-
                     b.Navigation("Rates");
                 });
 #pragma warning restore 612, 618

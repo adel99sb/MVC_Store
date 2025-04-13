@@ -75,8 +75,8 @@ namespace Ali_Store.Controllers
                 return NotFound();
             }           
             var product = await _context.Products
-                .Include(p => p.Rates)
-                    .ThenInclude(r => r.User)
+                .Include(p => p.Rates).ThenInclude(r => r.User).Include(p => p.Offers)
+                    
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -290,6 +290,30 @@ namespace Ali_Store.Controllers
             _context.Rates.Add(rate);
             await _context.SaveChangesAsync();
 
+            return RedirectToAction("Details", new { id = productId });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddOffer(int productId, decimal newPrice)
+        {
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                return NotFound("Product not found.");
+            }
+            product.NewPrice = newPrice;
+
+
+                // Create a new offer
+                var newOffer = new Offer
+                {
+                    ProductId = product.Id,
+                    Price = newPrice
+                };
+                _context.Offers.Add(newOffer);
+
+            await _context.SaveChangesAsync();
             return RedirectToAction("Details", new { id = productId });
         }
     }

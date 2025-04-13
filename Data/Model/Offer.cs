@@ -1,7 +1,10 @@
 ﻿namespace Ali_Store.Data.Model
 {
-    public class Offer : Product
+    public class Offer
     {
-        public float NewPrice { get; set; }
+        public int Id { get; set; }
+        public decimal Price { get; set; }
+        public int ProductId { get; set; }
+        public Product Product { get; set; }
     }
 }

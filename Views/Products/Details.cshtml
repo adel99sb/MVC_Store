@@ -1,8 +1,10 @@
 ﻿@model Ali_Store.Data.Model.Product
+@using Ali_Store.Data.Model
 
 @{
     ViewData["Title"] = "Details";
 }
+
 
 <h1>Details</h1>
 
@@ -102,4 +104,39 @@
         </form>
     </div>
 </div>
+
+<div>
+    @if (ViewBag.IsAdmin)
+    {
+        <h4>Offers</h4>
+        <hr />
+        <div>
+            @if (Model.Offers != null && Model.Offers.Any())
+            {
+                <ul>
+                    @foreach (var offer in Model.Offers)
+                    {
+                        <li>Offer Price: @offer.Price</li>
+                    }
+                </ul>
+            }
+            else
+            {
+                <p>No offers available.</p>
+            }
+        </div>
+        <div>
+            <h5>Add a New Offer</h5>
+            <form asp-action="AddOffer" method="post">
+                <input type="hidden" name="productId" value="@Model.Id" />
+                <div class="form-group">
+                    <label for="newPrice">New Offer Price:</label>
+                    <input type="number" id="newPrice" name="newPrice" class="form-control" required />
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Offer</button>
+            </form>
+        </div>
+    }
+</div>
+
 
