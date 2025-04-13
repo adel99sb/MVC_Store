@@ -79,8 +79,6 @@
                 <div class="row">
                     @foreach (var item in Model.OrderBy(x => x.CreatedAt))
                     {
-                        @if (ViewBag.IsAdmin)
-                        {
                             <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
                                 <div class="brand_box">
                                     <img src="~/images/@item.Pic" alt="img" />
@@ -91,52 +89,30 @@
                                     <span>
                                         @Html.DisplayFor(modelItem => item.Model)
                                     </span>
-                                    <i><img src="~/images/star.png" /></i>
-                                    <i><img src="~/images/star.png" /></i>
-                                    <i><img src="~/images/star.png" /></i>
-                                    <i><img src="~/images/star.png" /></i>
-                                    @* @if (item.IsSall)
-                                    {
-                                        <span><strong class="red">Sold</strong></span>
-                                    } 
-                                    else
-                                    {*@
-                                        <span>
-                                            <button class="btn btn-info">   <a asp-action="Details" asp-route-id="@item.Id">Show More</a></button>
-                                        </span>
-                                    @* } *@
-                                </div>
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="col-xl-4 col-lg-4 col-md-4 col-sm-6 margin">
-                                <div class="brand_box">
-                                    <img src="~/images/@item.Pic" alt="img" />
-                                    <h3>$<strong class="red">@Html.DisplayFor(modelItem => item.Price)</strong></h3>
+                                    <div>
+                                        @{
+                                            int fullStars = (int)item.AverageRating;
+                                            int halfStar = (item.AverageRating - fullStars) >= 0.5 ? 1 : 0;
+                                            int emptyStars = 5 - fullStars - halfStar;
+                                        }
+                                        @for (int i = 0; i < fullStars; i++)
+                                        {
+                                            <i><img src="~/images/star.png" alt="Full Star" style="max-width: 20px;"/></i>
+                                        }
+                                        @if (halfStar == 1)
+                                        {
+                                            <i><img src="~/images/half-star.png" alt="Half Star" style="max-width: 20px;"/></i>
+                                        }
+                                        @for (int i = 0; i < emptyStars; i++)
+                                        {
+                                            <i><img src="~/images/empty-star.png" alt="Empty Star" style="max-width: 20px;"/></i>
+                                        }
+                                    </div>
                                     <span>
-                                        @Html.DisplayFor(modelItem => item.Name)
+                                        <button class="btn btn-info">   <a asp-action="Details" asp-route-id="@item.Id">Show More</a></button>
                                     </span>
-                                    <span>
-                                        @Html.DisplayFor(modelItem => item.Model)
-                                    </span>                                
-                                    <i><img src="~/images/star.png" /></i>
-                                    <i><img src="~/images/star.png" /></i>
-                                    <i><img src="~/images/star.png" /></i>
-                                    <i><img src="~/images/star.png" /></i>
-                                    @* @if (item.IsSall)
-                                    {
-                                        <span>Sold</span>
-                                    } 
-                                    else
-                                    {*@
-                                        <span>
-                                            <a asp-action="Details" asp-route-id="@item.Id">Show More</a>
-                                        </span>
-                                    @* } *@
                                 </div>
                             </div>
-                        }
                     }
                 </div>
             </div>

@@ -21,38 +21,35 @@ namespace Ali_Store.Controllers
         {
             ViewBag.iSlaptop = false;
             var U_id = HttpContext.Session.GetInt32("User_id");
-            if (U_id == 1)
-                ViewBag.IsAdmin = true;
-            else
-                ViewBag.IsAdmin = false;
-            switch (CatgType)
-            {
-                case 1:
-                    {
-                        ViewBag.iSlaptop = true;
-                        return _context.Products != null ?
-                                                    View(await _context.Products.Where(p => p.Type == "Laptob").ToListAsync()) :
-                                                    Problem("Entity set 'StoreContext.Products'  is null.");
-                    }
+            ViewBag.IsAdmin = U_id == 1;
 
-                case 2:
-                    return _context.Products != null ?
-                          View(await _context.Products.Where(p => p.Type == "Mobail").ToListAsync()) :
-                          Problem("Entity set 'StoreContext.Products'  is null.");
-                case 3:
-                    return _context.Products != null ?
-                          View(await _context.Products.Where(p => p.Type == "Extentions").ToListAsync()) :
-                          Problem("Entity set 'StoreContext.Products'  is null.");
-                case 4:
-                    return _context.Products != null ?
-                          View(await _context.Products.ToListAsync()) :
-                          Problem("Entity set 'StoreContext.Products'  is null.");
-                default:
-                    return _context.Products != null ?
-                          View(await _context.Products.ToListAsync()) :
-                          Problem("Entity set 'StoreContext.Products'  is null.");
-                    break;
+            IQueryable<Product> productsQuery = _context.Products.Include(p => p.Rates);
+
+            if (CatgType.HasValue)
+            {
+                switch (CatgType.Value)
+                {
+                    case 1:
+                        ViewBag.iSlaptop = true;
+                        productsQuery = productsQuery.Where(p => p.Type == "Laptob");
+                        break;
+                    case 2:
+                        productsQuery = productsQuery.Where(p => p.Type == "Mobail");
+                        break;
+                    case 3:
+                        productsQuery = productsQuery.Where(p => p.Type == "Extentions");
+                        break;
+                }
             }
+
+            var products = await productsQuery.ToListAsync();
+
+            foreach (var product in products)
+            {
+                product.AverageRating = product.Rates.Any() ? product.Rates.Average(r => r.RateTo5) : 0;
+            }
+
+            return View(products);
         }
         [HttpPost]
         public async Task<IActionResult> Index(string? GoodFor)
@@ -79,6 +76,7 @@ namespace Ali_Store.Controllers
             }           
             var product = await _context.Products
                 .Include(p => p.Rates)
+                    .ThenInclude(r => r.User)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (product == null)
             {
@@ -263,6 +261,36 @@ namespace Ali_Store.Controllers
         private bool ProductExists(int id)
         {
           return (_context.Products?.Any(e => e.Id == id)).GetValueOrDefault();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddRating(int productId, int rateTo5, string comment)
+        {
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
+            {
+                return Unauthorized("User not logged in.");
+            }
+
+            var product = await _context.Products.FindAsync(productId);
+            if (product == null)
+            {
+                return NotFound("Product not found.");
+            }
+
+            var rate = new Rate
+            {
+                UserId = userId.Value,
+                ProductId = productId,
+                RateTo5 = rateTo5,
+                Comment = comment
+            };
+
+            _context.Rates.Add(rate);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", new { id = productId });
         }
     }
 }

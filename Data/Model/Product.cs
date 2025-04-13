@@ -18,5 +18,8 @@ namespace Ali_Store.Data.Model
         public IFormFile? PicPath { get; set; }
 
         public ICollection<Rate> Rates { get; set; } = new List<Rate>();
+
+        [NotMapped]
+        public double AverageRating { get; set; }
     }
 }
