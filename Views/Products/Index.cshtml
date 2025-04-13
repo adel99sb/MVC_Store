@@ -38,13 +38,14 @@
 <!-- body -->
 <h1>Index</h1>
 
-<p>
-   
-    <button class="btn btn-info"> <a asp-action="Create">Sall New One</a></button>
 
-</p>
 @if (ViewBag.IsAdmin)
 {
+    <p>
+   
+        <button class="btn btn-info"> <a asp-action="Create">Sell New One</a></button>
+
+    </p>
     <br />
     <p>
         <button class="btn btn-warning">  <a asp-controller="_User" asp-action="index">Mange Users</a></button>
