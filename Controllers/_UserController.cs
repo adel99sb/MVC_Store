@@ -61,8 +61,12 @@ namespace Ali_Store.Controllers
             {
                 _context.Add(_User);
                 await _context.SaveChangesAsync();
+                TempData["ToastMessage"] = "User created successfully!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction("Login");
             }
+            TempData["ToastMessage"] = "User creation failed!";
+            TempData["ToastType"] = "error";
             return View(_User);
         }
         [HttpPost]
@@ -132,8 +136,12 @@ namespace Ali_Store.Controllers
                         throw;
                     }
                 }
+                TempData["ToastMessage"] = "User updated successfully!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ToastMessage"] = "User update failed!";
+            TempData["ToastType"] = "error";
             return View(_User);
         }
 
@@ -171,6 +179,8 @@ namespace Ali_Store.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["ToastMessage"] = "User deleted successfully!";
+            TempData["ToastType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 

@@ -142,7 +142,8 @@ namespace Ali_Store.Controllers
             _context.Products.Update(prduct);
             _context.Users.Update(User);
             await _context.SaveChangesAsync();
-
+            TempData["ToastMessage"] = "Product bought successfully!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("index");
         }
         // GET: Products/Create
@@ -179,8 +180,12 @@ namespace Ali_Store.Controllers
             {
                 _context.Add(product);
                 await _context.SaveChangesAsync();
+                TempData["ToastMessage"] = "Product created successfully!";
+                TempData["ToastType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ToastMessage"] = "Product creation failed!";
+            TempData["ToastType"] = "error";
             return View(product);
         }
 
@@ -230,8 +235,12 @@ namespace Ali_Store.Controllers
                         throw;
                     }
                 }
+                TempData["ToastMessage"] = "Product updated successfully!"; 
+                TempData["ToastType"] = "success";
                 return RedirectToAction(nameof(Index));
             }
+            TempData["ToastMessage"] = "Product update failed!";
+            TempData["ToastType"] = "error";
             return View(product);
         }
 
@@ -269,6 +278,8 @@ namespace Ali_Store.Controllers
             }
             
             await _context.SaveChangesAsync();
+            TempData["ToastMessage"] = "Product deleted successfully!";
+            TempData["ToastType"] = "success";
             return RedirectToAction(nameof(Index));
         }
 
@@ -303,6 +314,8 @@ namespace Ali_Store.Controllers
 
             _context.Rates.Add(rate);
             await _context.SaveChangesAsync();
+            TempData["ToastMessage"] = "Rating added successfully!";
+            TempData["ToastType"] = "success";
 
             return RedirectToAction("Details", new { id = productId });
         }
@@ -325,9 +338,11 @@ namespace Ali_Store.Controllers
                     ProductId = product.Id,
                     Price = newPrice
                 };
-                _context.Offers.Add(newOffer);
+            _context.Offers.Add(newOffer);
 
             await _context.SaveChangesAsync();
+            TempData["ToastMessage"] = "Offer added successfully!";
+            TempData["ToastType"] = "success";
             return RedirectToAction("Details", new { id = productId });
         }
     }
