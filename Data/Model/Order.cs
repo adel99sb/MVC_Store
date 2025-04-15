@@ -7,6 +7,7 @@
         public int UserId { get; set; }
         public DateTime Date { get; set; }
         public float TotalPrice { get; set; }
-        public int NumberOfItems { get; set; }        
+        public int NumberOfItems { get; set; }
+        public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
     }
 }

@@ -345,5 +345,48 @@ namespace Ali_Store.Controllers
             TempData["ToastType"] = "success";
             return RedirectToAction("Details", new { id = productId });
         }
+
+        public async Task<IActionResult> Orders()
+        {
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            if(U_id == null || U_id != 1) {
+                return RedirectToAction("Login", "");
+            }
+
+            var orders = await _context.Orders
+                .Include(o => o.User)
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .ToListAsync();
+
+            return View(orders);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteOrder(int id)
+        {
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            if(U_id == null || U_id != 1) {
+                return RedirectToAction("Login", "");
+            }
+
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .FirstOrDefaultAsync(o => o.Id == id);
+
+            if (order == null)
+            {
+                return NotFound("Order not found.");
+            }
+
+            _context.OrderItems.RemoveRange(order.OrderItems);
+            _context.Orders.Remove(order);
+            await _context.SaveChangesAsync();
+
+            TempData["ToastMessage"] = "Order deleted successfully!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Orders");
+        }
     }
 }

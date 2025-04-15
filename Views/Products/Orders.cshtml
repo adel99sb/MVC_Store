@@ -1,0 +1,52 @@
+@model IEnumerable<Ali_Store.Data.Model.Order>
+@{
+    ViewData["Title"] = "Orders";
+}
+
+<h1>Orders</h1>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>User</th>
+            <th>Date</th>
+            <th>Total Price</th>
+            <th>Products</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model)
+        {
+            <tr>
+                <td>@order.Id</td>
+                <td>
+                    <a asp-controller="_User" asp-action="Details" asp-route-id="@order.UserId">
+                        @order.User.FirstName @order.User.LastName
+                    </a>
+                </td>
+                <td>@order.Date.ToShortDateString()</td>
+                <td>@order.TotalPrice</td>
+                <td>
+                    <ul>
+                        @foreach (var item in order.OrderItems)
+                        {
+                            <li>
+                                <a asp-controller="Products" asp-action="Details" asp-route-id="@item.Product.Id">
+                                    @item.Product.Name
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </td>
+                <td>
+                    <form asp-action="DeleteOrder" asp-controller="Products" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@order.Id" />
+                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table> 
