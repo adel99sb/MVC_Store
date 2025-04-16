@@ -59,7 +59,9 @@
     {
         if(Model.IsSall == false)
         {
-            <button class="btn btn-info">  <a asp-action="Buy" asp-route-id="@Model?.Id">Buy</a></button>
+            <button class="btn btn-primary">
+                <a asp-action="AddToCart" asp-controller="Products" asp-route-productId="@Model?.Id" style="color: white; text-decoration: none;">Add to Cart</a>
+            </button>
         }
         else
         {

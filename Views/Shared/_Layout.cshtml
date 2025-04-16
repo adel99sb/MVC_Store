@@ -1,4 +1,8 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@{
+    var userId = HttpContextAccessor.HttpContext.Session.GetInt32("User_id"); 
+}
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -35,6 +39,16 @@
                         <li class="nav-item">
                             <a class="nav-link text-white" asp-route-CatgType="All" asp-controller="Products" asp-action="Index">All</a>
                         </li>
+                        @if(userId != null && userId != 1) {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Products" asp-action="Cart">Cart</a>
+                            </li>
+                        }
+                        @if(userId != null) {
+                            <li class="nav-item">
+                                <a class="nav-link text-white" asp-controller="Products" asp-action="Orders">Orders</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>

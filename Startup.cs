@@ -18,6 +18,7 @@ namespace Ali_Store
             services.AddSession();
             services.AddDbContext<StoreContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddHttpContextAccessor();
         }
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {

@@ -3,6 +3,7 @@ using Ali_Store.Data.Model;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+using Ali_Store.Extensions;
 
 namespace Ali_Store.Controllers
 {
@@ -331,16 +332,23 @@ namespace Ali_Store.Controllers
         public async Task<IActionResult> Orders()
         {
             var U_id = HttpContext.Session.GetInt32("User_id");
-            if(U_id == null || U_id != 1) {
+            if(U_id == null) {
                 return RedirectToAction("Login", "");
             }
-
             var orders = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
                 .ThenInclude(oi => oi.Product)
                 .ToListAsync();
 
+            if(U_id != 1) {
+                    orders = await _context.Orders
+                    .Include(o => o.User)
+                    .Include(o => o.OrderItems)
+                    .ThenInclude(oi => oi.Product)
+                    .Where(o => o.User.Id == U_id)
+                    .ToListAsync();
+            }
             return View(orders);
         }
 
@@ -369,6 +377,117 @@ namespace Ali_Store.Controllers
             TempData["ToastMessage"] = "Order deleted successfully!";
             TempData["ToastType"] = "success";
             return RedirectToAction("Orders");
+        }
+
+        public IActionResult Cart()
+        {
+            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
+            return View(cart);
+        }
+
+        public IActionResult AddToCart(int productId)
+        {
+            var product = _context.Products.Find(productId);
+            if (product == null)
+            {
+                return NotFound("Product not found.");
+            }
+
+            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
+            var cartItem = cart.Items.FirstOrDefault(i => i.Product.Id == productId);
+            if (cartItem != null)
+            {
+                cart.Quantity++;
+            }
+            if(product.NewPrice != null)
+            {
+                product.Price = (float)product.NewPrice;
+            }
+            else
+            {
+                cart.Items.Add(new CartItem { Product = product});
+            }
+
+            HttpContext.Session.SetObjectAsJson("Cart", cart);
+            TempData["ToastMessage"] = "Product added to cart!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("index", "Products");
+        }
+
+        public IActionResult RemoveFromCart(int productId)
+        {
+            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
+            var cartItem = cart.Items.FirstOrDefault(i => i.Product.Id == productId);
+            if (cartItem != null)
+            {
+                cart.Items.Remove(cartItem);
+            }
+
+            HttpContext.Session.SetObjectAsJson("Cart", cart);
+            TempData["ToastMessage"] = "Product removed from cart!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Cart");
+        }
+
+        public async Task<IActionResult> PurchaseCart()
+        {
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            if(U_id == null) {
+                return RedirectToAction("Login", "");
+            }
+
+            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
+            if (!cart.Items.Any())
+            {
+                TempData["ToastMessage"] = "Cart is empty!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Cart");
+            }
+            
+
+            var user = _context.Users.Find(U_id);
+            if (user == null)
+            {
+                return NotFound("User not found.");
+            }
+
+            if (user.Amount < cart.TotalPrice)
+            {
+                TempData["ToastMessage"] = "Insufficient balance!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Cart");
+            }
+
+            var order = new Order
+            {
+                User = user,
+                Date = DateTime.Now,
+                TotalPrice = cart.TotalPrice,
+                NumberOfItems = cart.Items.Count
+            };
+
+            _context.Orders.Add(order);
+            await _context.SaveChangesAsync();
+
+            foreach (var item in cart.Items)
+            {
+                var prduct = _context.Products.Find(item.Product.Id);
+                prduct.IsSall = true;
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductId = item.Product.Id
+                };
+                _context.Products.Update(prduct);
+                _context.OrderItems.Add(orderItem);
+            }
+
+            await _context.SaveChangesAsync();
+
+            HttpContext.Session.Remove("Cart");
+            TempData["ToastMessage"] = "Purchase successful!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Index");
         }
     }
 }
