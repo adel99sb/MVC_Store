@@ -16,3 +16,15 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.bg-main {
+  background-color: #253453 !important;
+}
+
+.text-white {
+  color: #fff !important;
+}
+
+.text-white:hover {
+  color: #cecdcd !important;
+}
