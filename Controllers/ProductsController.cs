@@ -21,9 +21,9 @@ namespace Ali_Store.Controllers
         {
             ViewBag.iSlaptop = false;
             var U_id = HttpContext.Session.GetInt32("User_id");
-            if(U_id == null) {
-                return RedirectToAction("Login", "");
-            }
+            // if(U_id == null) {
+            //     return RedirectToAction("Login", "");
+            // }
             ViewBag.IsAdmin = U_id == 1;
 
             IQueryable<Product> productsQuery = _context.Products.Include(p => p.Rates);
@@ -46,24 +46,6 @@ namespace Ali_Store.Controllers
 
             return View(products);
         }
-        // [HttpPost]
-        // public async Task<IActionResult> Index(string? GoodFor)
-        // {
-        //     ViewBag.iSlaptop = true;
-        //     var U_id = HttpContext.Session.GetInt32("User_id");
-            // if(U_id == null) {
-            //     return RedirectToAction("Login", "");
-            // }
-        //     if (U_id == 1)
-        //         ViewBag.IsAdmin = true;
-        //     else
-        //         ViewBag.IsAdmin = false;
-            
-        //                 return _context.Products != null ?
-        //                         View(await _context.Products.Where(p => p.Type == "Laptob")
-        //                         .Where(p => p.GoodFor.Contains(GoodFor)).ToListAsync()) :
-        //                         Problem("Entity set 'StoreContext.Products'  is null.");                                  
-        // }
 
         // GET: Products/Details/[id]
         public async Task<IActionResult> Details(int? id)
