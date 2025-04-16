@@ -3,60 +3,303 @@
 @{
     ViewData["Title"] = "Orders";
     var userId = HttpContextAccessor.HttpContext.Session.GetInt32("User_id");
+    var isAdmin = userId == 1;
 }
 
-<h1>Orders</h1>
+<style>
+    .orders-container {
+        padding: 30px 0;
+    }
+    
+    .orders-header {
+        margin-bottom: 25px;
+    }
+    
+    .orders-header h2 {
+        color: #253453;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .orders-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .orders-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .orders-table th {
+        background-color: #253453;
+        color: white;
+        font-weight: 600;
+        text-align: left;
+        padding: 15px 20px;
+        border: none;
+    }
+    
+    .orders-table th:first-child {
+        border-top-left-radius: 15px;
+    }
+    
+    .orders-table th:last-child {
+        border-top-right-radius: 15px;
+    }
+    
+    .orders-table td {
+        padding: 15px 20px;
+        border-top: 1px solid #eee;
+        vertical-align: middle;
+    }
+    
+    .orders-table tr:nth-child(even) {
+        background-color: #f8f9fa;
+    }
+    
+    .orders-table tr:hover {
+        background-color: #f1f4f7;
+    }
+    
+    .orders-table .order-id {
+        font-weight: 600;
+        color: #253453;
+    }
+    
+    .orders-table .order-date {
+        color: #7f8c8d;
+    }
+    
+    .orders-table .order-price {
+        font-weight: 600;
+        color: #253453;
+    }
+    
+    .product-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .product-list li {
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+    }
+    
+    .product-list li:last-child {
+        margin-bottom: 0;
+    }
+    
+    .product-list a {
+        color: #2c3e50;
+        text-decoration: none;
+        transition: color 0.3s ease;
+        display: flex;
+        align-items: center;
+    }
+    
+    .product-list a:hover {
+        color: #253453;
+    }
+    
+    .product-list a::before {
+        content: "";
+        display: inline-block;
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background-color: #253453;
+        margin-right: 8px;
+    }
+    
+    .user-link {
+        color: #253453;
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+    
+    .user-link:hover {
+        color: #1a2541;
+    }
+    
+    .btn-action {
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 10px rgba(231, 76, 60, 0.2);
+    }
+    
+    .empty-orders {
+        text-align: center;
+        padding: 40px;
+        color: #7f8c8d;
+    }
+    
+    .empty-orders svg {
+        margin-bottom: 15px;
+        color: #e0e0e0;
+    }
+    
+    .empty-orders p {
+        font-size: 18px;
+        margin-bottom: 10px;
+    }
+    
+    .empty-orders .btn-primary {
+        background: linear-gradient(135deg, #253453 0%, #1a2541 100%);
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        color: white;
+        transition: all 0.3s ease;
+        display: inline-block;
+        margin-top: 10px;
+        text-decoration: none;
+    }
+    
+    .empty-orders .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 14px rgba(37, 52, 83, 0.2);
+    }
+    
+    .badge {
+        display: inline-block;
+        padding: 5px 10px;
+        border-radius: 50px;
+        font-size: 12px;
+        font-weight: 600;
+        margin-left: 10px;
+    }
+    
+    .badge-primary {
+        background-color: #253453;
+        color: white;
+    }
+</style>
 
-<table class="table table-striped">
-    <thead>
-        <tr>
-            <th>Order ID</th>
-            @if(userId == 1) {
-                <th>User</th>
+<div class="orders-container">
+    <div class="orders-header">
+        <h2>
+            Order History
+            @if(Model.Count() > 0) {
+                <span class="badge badge-primary">@Model.Count()</span>
             }
-            <th>Date</th>
-            <th>Total Price</th>
-            <th>Products</th>
-            @if(userId == 1) {
-                <th>Actions</th>
-            }
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var order in Model)
-        {
-            <tr>
-                <td>@order.Id</td>
-                @if(userId == 1) {
-                    <td>
-                        <a asp-controller="_User" asp-action="Details" asp-route-id="@order.UserId">
-                            @order.User.FirstName @order.User.LastName
-                        </a>
-                    </td>
-                }
-                <td>@order.Date.ToShortDateString()</td>
-                <td>@order.TotalPrice</td>
-                <td>
-                    <ul>
-                        @foreach (var item in order.OrderItems)
+        </h2>
+    </div>
+    
+    @if(Model.Any()) {
+        <div class="orders-card">
+            <div class="table-responsive">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            @if(isAdmin) {
+                                <th>Customer</th>
+                            }
+                            <th>Date</th>
+                            <th>Total</th>
+                            <th>Products</th>
+                            @if(isAdmin) {
+                                <th>Actions</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var order in Model)
                         {
-                            <li>
-                                <a asp-controller="Products" asp-action="Details" asp-route-id="@item.Product.Id">
-                                    @item.Product.Name
-                                </a>
-                            </li>
+                            <tr>
+                                <td class="order-id">#@order.Id</td>
+                                @if(isAdmin) {
+                                    <td>
+                                        <a href="@Url.Action("Details", "_User", new { id = order.UserId })" class="user-link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person" viewBox="0 0 16 16" style="margin-right: 5px;">
+                                                <path d="M8 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm2-3a2 2 0 1 1-4 0 2 2 0 0 1 4 0Zm4 8c0 1-1 1-1 1H3s-1 0-1-1 1-4 6-4 6 3 6 4Zm-1-.004c-.001-.246-.154-.986-.832-1.664C11.516 10.68 10.289 10 8 10c-2.29 0-3.516.68-4.168 1.332-.678.678-.83 1.418-.832 1.664h10Z"/>
+                                            </svg>
+                                            @order.User.FirstName @order.User.LastName
+                                        </a>
+                                    </td>
+                                }
+                                <td class="order-date">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar3" viewBox="0 0 16 16" style="margin-right: 5px;">
+                                        <path d="M14 0H2a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zM1 3.857C1 3.384 1.448 3 2 3h12c.552 0 1 .384 1 .857v10.286c0 .473-.448.857-1 .857H2c-.552 0-1-.384-1-.857V3.857z"/>
+                                        <path d="M6.5 7a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm-9 3a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2zm3 0a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
+                                    </svg>
+                                    @order.Date.ToString("MMM dd, yyyy")
+                                </td>
+                                <td class="order-price">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-currency-dollar" viewBox="0 0 16 16" style="margin-right: 2px;">
+                                        <path d="M4 10.781c.148 1.667 1.513 2.85 3.591 3.003V15h1.043v-1.216c2.27-.179 3.678-1.438 3.678-3.3 0-1.59-.947-2.51-2.956-3.028l-.722-.187V3.467c1.122.11 1.879.714 2.07 1.616h1.47c-.166-1.6-1.54-2.748-3.54-2.875V1H7.591v1.233c-1.939.23-3.27 1.472-3.27 3.156 0 1.454.966 2.483 2.661 2.917l.61.162v4.031c-1.149-.17-1.94-.8-2.131-1.718H4zm3.391-3.836c-1.043-.263-1.6-.825-1.6-1.616 0-.944.704-1.641 1.8-1.828v3.495l-.2-.05zm1.591 1.872c1.287.323 1.852.859 1.852 1.769 0 1.097-.826 1.828-2.2 1.939V8.73l.348.086z"/>
+                                    </svg>
+                                    @order.TotalPrice.ToString("0.00")
+                                </td>
+                                <td>
+                                    <ul class="product-list">
+                                        @foreach (var item in order.OrderItems)
+                                        {
+                                            <li>
+                                                <a asp-controller="Products" asp-action="Details" asp-route-id="@item.Product.Id">
+                                                    @item.Product.Name
+                                                </a>
+                                            </li>
+                                        }
+                                    </ul>
+                                </td>
+                                @if(isAdmin) {
+                                    <td>
+                                        <form asp-action="DeleteOrder" asp-controller="Products" method="post" style="display:inline;">
+                                            <input type="hidden" name="id" value="@order.Id" />
+                                            <button type="submit" class="btn-action btn-danger" onclick="return confirm('Are you sure you want to delete this order? This action cannot be undone.');">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" style="margin-right: 5px;">
+                                                    <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                                                    <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                                                </svg>
+                                                Delete
+                                            </button>
+                                        </form>
+                                    </td>
+                                }
+                            </tr>
                         }
-                    </ul>
-                </td>
-                @if(userId == 1) {
-                    <td>
-                        <form asp-action="DeleteOrder" asp-controller="Products" method="post" style="display:inline;">
-                            <input type="hidden" name="id" value="@order.Id" />
-                        <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this order?');">Delete</button>
-                        </form>
-                    </td>
-                }
-            </tr>
-        }
-    </tbody>
-</table> 
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    } else {
+        <div class="orders-card">
+            <div class="empty-orders">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-bag-x" viewBox="0 0 16 16">
+                    <path fill-rule="evenodd" d="M6.146 8.146a.5.5 0 0 1 .708 0L8 9.293l1.146-1.147a.5.5 0 1 1 .708.708L8.707 10l1.147 1.146a.5.5 0 0 1-.708.708L8 10.707l-1.146 1.147a.5.5 0 0 1-.708-.708L7.293 10 6.146 8.854a.5.5 0 0 1 0-.708z"/>
+                    <path d="M8 1a2.5 2.5 0 0 1 2.5 2.5V4h-5v-.5A2.5 2.5 0 0 1 8 1zm3.5 3v-.5a3.5 3.5 0 1 0-7 0V4H1v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V4h-3.5zM2 5h12v9a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V5z"/>
+                </svg>
+                <p>No orders found</p>
+                <span>Start shopping to create your first order</span>
+                <div>
+                    <a asp-controller="Products" asp-action="Index" class="btn-primary">
+                        Browse Products
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div> 

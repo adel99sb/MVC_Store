@@ -193,7 +193,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic,GoodFor")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic,GoodFor,NewPrice")] Product product)
         {
             if (id != product.Id)
             {
@@ -204,23 +204,38 @@ namespace Ali_Store.Controllers
             {
                 try
                 {
+                    // Handle image file upload
+                    if (Request.Form.Files.Count > 0)
+                    {
+                        var file = Request.Form.Files.FirstOrDefault(f => f.Name == "ImageFile");
+                        if (file != null && file.Length > 0)
+                        {
+                            // Generate a unique filename to avoid overwrites
+                            string fileName = Path.GetFileName(file.FileName);
+                            
+                            // Save the file to the images folder
+                            string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", fileName);
+                            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(fs);
+                            }
+                            
+                            // Update the product's Pic property with the new filename
+                            product.Pic = fileName;
+                        }
+                    }
+
                     _context.Update(product);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ProductExists(product.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
+
                         throw;
-                    }
                 }
                 TempData["ToastMessage"] = "Product updated successfully!"; 
                 TempData["ToastType"] = "success";
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("index", "Products");
             }
             TempData["ToastMessage"] = "Product update failed!";
             TempData["ToastType"] = "error";

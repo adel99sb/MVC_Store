@@ -1,51 +1,200 @@
 ﻿@model Ali_Store.Data.Model.Product
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Delete " + Model.Name;
 }
 
-<h1>Delete</h1>
-
-<h3>Are you sure you want to delete this?</h3>
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Type)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Type)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Pic)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Pic)
-        </dd>
-    </dl>
+<style>
+    .delete-container {
+        padding: 30px 0;
+    }
     
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Back to List</a>
-    </form>
+    .delete-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .delete-header {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        color: white;
+        padding: 25px 30px;
+        position: relative;
+    }
+    
+    .delete-header h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 5px;
+    }
+    
+    .delete-header p {
+        font-size: 16px;
+        opacity: 0.9;
+        margin-bottom: 0;
+    }
+    
+    .delete-header .warning-icon {
+        position: absolute;
+        right: 30px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 50px;
+        height: 50px;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+    }
+    
+    .product-info {
+        padding: 30px;
+    }
+    
+    .product-image {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .product-image img {
+        max-width: 100%;
+        max-height: 200px;
+        object-fit: contain;
+    }
+    
+    .spec-group {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+        display: flex;
+    }
+    
+    .spec-group:last-child {
+        border-bottom: none;
+    }
+    
+    .spec-label {
+        font-weight: 600;
+        color: #2c3e50;
+        width: 30%;
+        min-width: 120px;
+    }
+    
+    .spec-value {
+        color: #7f8c8d;
+        flex: 1;
+    }
+    
+    .delete-actions {
+        padding: 20px 30px;
+        background: #f8f9fa;
+        display: flex;
+        gap: 15px;
+        justify-content: flex-end;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-danger {
+        background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        border: none;
+        color: white;
+    }
+    
+    .btn-danger:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 14px rgba(231, 76, 60, 0.2);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #e0e0e0;
+        color: #7f8c8d;
+    }
+    
+    .btn-outline:hover {
+        border-color: #253453;
+        color: #253453;
+    }
+</style>
+
+<div class="delete-container">
+    <div class="delete-card">
+        <div class="delete-header">
+            <h2>Delete Product</h2>
+            <p>Are you sure you want to permanently delete this product?</p>
+            <div class="warning-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" class="bi bi-exclamation-triangle" viewBox="0 0 16 16">
+                    <path d="M7.938 2.016A.13.13 0 0 1 8.002 2a.13.13 0 0 1 .063.016.146.146 0 0 1 .054.057l6.857 11.667c.036.06.035.124.002.183a.163.163 0 0 1-.054.06.116.116 0 0 1-.066.017H1.146a.115.115 0 0 1-.066-.017.163.163 0 0 1-.054-.06.176.176 0 0 1 .002-.183L7.884 2.073a.147.147 0 0 1 .054-.057zm1.044-.45a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767L8.982 1.566z"/>
+                    <path d="M7.002 12a1 1 0 1 1 2 0 1 1 0 0 1-2 0zM7.1 5.995a.905.905 0 1 1 1.8 0l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995z"/>
+                </svg>
+            </div>
+        </div>
+        
+        <div class="product-info">
+            <div class="product-image">
+                @if (!string.IsNullOrEmpty(Model.Pic))
+                {
+                    <img src="~/images/@Model.Pic" alt="@Model.Name" />
+                }
+                else
+                {
+                    <img src="~/images/product-placeholder.png" alt="@Model.Name" />
+                }
+            </div>
+            
+            <div class="spec-group">
+                <div class="spec-label">Name</div>
+                <div class="spec-value">@Model.Name</div>
+            </div>
+            
+            <div class="spec-group">
+                <div class="spec-label">Category</div>
+                <div class="spec-value">@Model.Type</div>
+            </div>
+            
+            <div class="spec-group">
+                <div class="spec-label">Model</div>
+                <div class="spec-value">@Model.Model</div>
+            </div>
+            
+            <div class="spec-group">
+                <div class="spec-label">Price</div>
+                <div class="spec-value">$@Model.Price</div>
+            </div>
+            
+            @if (Model.NewPrice.HasValue)
+            {
+                <div class="spec-group">
+                    <div class="spec-label">Sale Price</div>
+                    <div class="spec-value">$@Model.NewPrice</div>
+                </div>
+            }
+        </div>
+        
+        <div class="delete-actions">
+            <form asp-action="Delete">
+                <input type="hidden" asp-for="Id" />
+                <button type="submit" class="btn btn-danger">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" style="margin-right: 5px;">
+                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                    </svg>
+                    Confirm Delete
+                </button>
+            </form>
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline">Cancel</a>
+        </div>
+    </div>
 </div>

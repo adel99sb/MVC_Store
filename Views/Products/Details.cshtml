@@ -2,143 +2,473 @@
 @using Ali_Store.Data.Model
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = Model.Name;
 }
 
-
-<h1>Details</h1>
-
-<div>
-    <h4>Product</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Type)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Type)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Model)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Model)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Pic)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Pic)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.GoodFor)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.GoodFor)
-        </dd>
-    </dl>
-</div>
-<div>
-    @if (ViewBag.IsAdmin)
-    {
-       <button class="btn btn-info"> <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a></button>
-    }   
-    else
-    {
-        if(Model.IsSall == false)
-        {
-            <button class="btn btn-primary">
-                <a asp-action="AddToCart" asp-controller="Products" asp-route-productId="@Model?.Id" style="color: white; text-decoration: none;">Add to Cart</a>
-            </button>
-        }
-        else
-        {
-            <span>Sold</span>
-        }
+<style>
+    .product-details-container {
+        padding: 30px 0;
     }
-    <button class="btn btn-info">  <a asp-action="Index">Back to List</a></button>
-</div>
-
-<div>
-    <h4>Ratings</h4>
-    <hr />
-    <div>
-        @if (Model.Rates != null && Model.Rates.Any())
-        {
-            <ul>
-                @foreach (var rating in Model.Rates)
-                {
-
-                    <li>@rating.User.FirstName: @rating.RateTo5 - @rating.Comment</li>
-                }
-            </ul>
+    
+    .product-header {
+        margin-bottom: 30px;
+    }
+    
+    .product-header h2 {
+        color: #253453;
+        font-size: 32px;
+        font-weight: 700;
+        margin-bottom: 10px;
+    }
+    
+    .product-header .breadcrumb {
+        background: none;
+        padding: 0;
+        margin-bottom: 0;
+    }
+    
+    .product-header .breadcrumb-item a {
+        color: #253453;
+        text-decoration: none;
+    }
+    
+    .product-header .badge {
+        font-size: 12px;
+        padding: 6px 12px;
+        border-radius: 50px;
+        margin-left: 15px;
+        vertical-align: middle;
+    }
+    
+    .badge-primary {
+        background-color: #253453;
+    }
+    
+    .badge-danger {
+        background-color: #e74c3c;
+    }
+    
+    .product-card {
+        background: #fff;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+        overflow: hidden;
+        margin-bottom: 30px;
+    }
+    
+    .product-info {
+        padding: 30px;
+    }
+    
+    .product-image {
+        text-align: center;
+        padding: 20px;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 15px;
+        margin-bottom: 20px;
+    }
+    
+    .product-image img {
+        max-width: 100%;
+        max-height: 300px;
+        object-fit: contain;
+    }
+    
+    .product-specs {
+        margin-top: 20px;
+    }
+    
+    .spec-group {
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .spec-group:last-child {
+        border-bottom: none;
+    }
+    
+    .spec-label {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-bottom: 5px;
+    }
+    
+    .spec-value {
+        color: #7f8c8d;
+    }
+    
+    .price-tag {
+        font-size: 24px;
+        font-weight: 700;
+        color: #253453;
+        margin: 15px 0;
+    }
+    .original-price {
+        font-size: 16px;
+        font-weight: 400;
+        color: #A0AEC0;
+        text-decoration: line-through;
+    }
+    
+    .action-buttons {
+        display: flex;
+        gap: 10px;
+        margin: 20px 0;
+    }
+    
+    .btn {
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-primary {
+        background: linear-gradient(135deg, #253453 0%, #1a2541 100%);
+        border: none;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 14px rgba(37, 52, 83, 0.2);
+    }
+    
+    .btn-outline {
+        background: transparent;
+        border: 2px solid #e0e0e0;
+        color: #7f8c8d;
+    }
+    
+    .btn-outline:hover {
+        border-color: #253453;
+        color: #253453;
+    }
+    
+    .btn a {
+        color: inherit;
+        text-decoration: none;
+    }
+    
+    .section-title {
+        font-size: 20px;
+        font-weight: 700;
+        color: #253453;
+        margin: 30px 0 15px;
+        padding-bottom: 10px;
+        border-bottom: 2px solid #f1f1f1;
+        display: flex;
+        align-items: center;
+    }
+    
+    .section-title svg {
+        margin-right: 10px;
+    }
+    
+    .ratings-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .rating-item {
+        display: flex;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        margin-bottom: 10px;
+    }
+    
+    .rating-user {
+        font-weight: 600;
+        color: #2c3e50;
+        margin-right: 10px;
+    }
+    
+    .rating-stars {
+        color: #f39c12;
+        margin-right: 10px;
+    }
+    
+    .rating-comment {
+        color: #7f8c8d;
+    }
+    
+    .rating-form {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+    
+    .sold-badge {
+        display: inline-block;
+        background-color: #e74c3c;
+        color: white;
+        padding: 8px 16px;
+        border-radius: 5px;
+        font-weight: 600;
+    }
+    
+    .offers-list {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .offer-item {
+        display: flex;
+        padding: 15px;
+        border-radius: 10px;
+        background-color: #f8f9fa;
+        margin-bottom: 10px;
+        align-items: center;
+    }
+    
+    .offer-price {
+        font-weight: 600;
+        color: #253453;
+    }
+    
+    .offer-form {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 15px;
+    }
+    
+    @* @media (max-width: 768px) {
+        .action-buttons {
+            flex-direction: column;
         }
-        else
-        {
-            <p>No ratings yet.</p>
-        }
-    </div>
-    <div>
-        <h5>Add a Rating</h5>
-        <form asp-action="AddRating" method="post">
-            <input type="hidden" name="productId" value="@Model.Id" />
-            <div class="form-group">
-                <label for="RateTo5">Rate (1-5):</label>
-                <input type="number" id="RateTo5" name="RateTo5" min="1" max="5" class="form-control" required />
-            </div>
-            <div class="form-group">
-                <label for="Comment">Comment:</label>
-                <textarea id="Comment" name="Comment" class="form-control"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">Submit Rating</button>
-        </form>
-    </div>
-</div>
+    } *@
+</style>
 
-<div>
-    @if (ViewBag.IsAdmin)
-    {
-        <h4>Offers</h4>
-        <hr />
-        <div>
-            @if (Model.Offers != null && Model.Offers.Any())
-            {
-                <ul>
-                    @foreach (var offer in Model.Offers)
-                    {
-                        <li>Offer Price: @offer.Price</li>
-                    }
-                </ul>
-            }
-            else
-            {
-                <p>No offers available.</p>
-            }
-        </div>
-        <div>
-            <h5>Add a New Offer</h5>
-            <form asp-action="AddOffer" method="post">
-                <input type="hidden" name="productId" value="@Model.Id" />
-                <div class="form-group">
-                    <label for="newPrice">New Offer Price:</label>
-                    <input type="number" id="newPrice" name="newPrice" class="form-control" required />
+<div class="product-details-container">
+    <div class="product-header">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a asp-action="Index">Products</a></li>
+                <li class="breadcrumb-item active" aria-current="page">@Model.Name</li>
+            </ol>
+        </nav>
+        <h2>
+            @Model.Name
+            <span class="badge @(Model.IsSall == true ? "badge-danger" : "badge-primary")">
+                @(Model.IsSall == true ? "Sold" : Model.Type)
+            </span>
+        </h2>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <div class="product-card">
+                <div class="product-info">
+                    <div class="product-image">
+                        @if (!string.IsNullOrEmpty(Model.Pic))
+                        {
+                            <img src="~/images/@Model.Pic" alt="@Model.Name" />
+                        }
+                        else
+                        {
+                            <img src="~/images/product-placeholder.png" alt="@Model.Name" />
+                        }
+                    </div>
+                                                        @if (Model.NewPrice != null)
+                                    {
+                                        <span class="price-tag">$@Model.NewPrice.Value</span>
+                                        <span class="original-price">$@Model.Price</span>
+                                    }
+                                    else
+                                    {
+                                        <div class="price-tag">$@Model.Price</div>
+                                    }
+                    
+                    <div class="product-specs">
+                        <div class="section-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-info-circle" viewBox="0 0 16 16">
+                                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z"/>
+                                <path d="m8.93 6.588-2.29.287-.082.38.45.083c.294.07.352.176.288.469l-.738 3.468c-.194.897.105 1.319.808 1.319.545 0 1.178-.252 1.465-.598l.088-.416c-.2.176-.492.246-.686.246-.275 0-.375-.193-.304-.533L8.93 6.588zM9 4.5a1 1 0 1 1-2 0 1 1 0 0 1 2 0z"/>
+                            </svg>
+                            Product Specifications
+                        </div>
+                        
+                        <div class="spec-group">
+                            <div class="spec-label">Name</div>
+                            <div class="spec-value">@Model.Name</div>
+                        </div>
+                        
+                        <div class="spec-group">
+                            <div class="spec-label">Category</div>
+                            <div class="spec-value">@Model.Type</div>
+                        </div>
+                        
+                        <div class="spec-group">
+                            <div class="spec-label">Model</div>
+                            <div class="spec-value">@Model.Model</div>
+                        </div>
+                        
+                        <div class="spec-group">
+                            <div class="spec-label">Description</div>
+                            <div class="spec-value">@Model.GoodFor</div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        @if (ViewBag.IsAdmin)
+                        {
+                            <button class="btn btn-primary">
+                                <a asp-action="Edit" asp-route-id="@Model?.Id">Edit Product</a>
+                            </button>
+                            <button class="btn btn-outline" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); color: white; border: none;">
+                                <a asp-action="Delete" asp-route-id="@Model?.Id" style="color: white;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash" viewBox="0 0 16 16" style="margin-right: 5px;">
+                                        <path d="M5.5 5.5A.5.5 0 0 1 6 6v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm2.5 0a.5.5 0 0 1 .5.5v6a.5.5 0 0 1-1 0V6a.5.5 0 0 1 .5-.5Zm3 .5a.5.5 0 0 0-1 0v6a.5.5 0 0 0 1 0V6Z"/>
+                                        <path d="M14.5 3a1 1 0 0 1-1 1H13v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V4h-.5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1H6a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1h3.5a1 1 0 0 1 1 1v1ZM4.118 4 4 4.059V13a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1V4.059L11.882 4H4.118ZM2.5 3h11V2h-11v1Z"/>
+                                    </svg>
+                                    Delete Product
+                                </a>
+                            </button>
+                        }
+                        else
+                        {
+                            if(Model.IsSall == false)
+                            {
+                                <button class="btn btn-primary">
+                                    <a asp-action="AddToCart" asp-controller="Products" asp-route-productId="@Model?.Id">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16" style="margin-right: 5px;">
+                                            <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
+                                            <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 1H2a.5.5 0 0 0 0-1h2.5a.5.5 0 0 0 .5-.5v-.5H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 1 2 2 0 0 0 0-1zm7 0a2 2 0 1 0 0 1 2 2 0 0 0 0-1z"/>
+                                        </svg>
+                                        Add to Cart
+                                    </a>
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="sold-badge">Product Sold</div>
+                            }
+                        }
+                        <button class="btn btn-outline">
+                            <a asp-action="Index">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16" style="margin-right: 5px;">
+                                    <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8z"/>
+                                </svg>
+                                Back to Products
+                            </a>
+                        </button>
+                    </div>
                 </div>
-                <button type="submit" class="btn btn-primary">Submit Offer</button>
-            </form>
+            </div>
         </div>
-    }
+        
+        <div class="col-md-4">
+            <div class="product-card">
+                <div class="product-info">
+                    <div class="section-title">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">
+                            <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                        </svg>
+                        Customer Reviews
+                    </div>
+                    
+                    @if (Model.Rates != null && Model.Rates.Any())
+                    {
+                        <ul class="ratings-list">
+                            @foreach (var rating in Model.Rates)
+                            {
+                                <li class="rating-item">
+                                    <span class="rating-user">@rating.User.FirstName</span>
+                                    <span class="rating-stars">
+                                        @for (int i = 0; i < (int)rating.RateTo5; i++)
+                                        {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star-fill" viewBox="0 0 16 16">
+                                                <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                            </svg>
+                                        }
+                                        @for (int i = (int)rating.RateTo5; i < 5; i++)
+                                        {
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-star" viewBox="0 0 16 16">
+                                                <path d="M2.866 14.85c-.078.444.36.791.746.593l4.39-2.256 4.389 2.256c.386.198.824-.149.746-.592l-.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"/>
+                                            </svg>
+                                        }
+                                    </span>
+                                    <span class="rating-comment">@rating.Comment</span>
+                                </li>
+                            }
+                        </ul>
+                    }
+                    else
+                    {
+                        <p>No ratings yet. Be the first to rate this product!</p>
+                    }
+                    
+                    <div class="rating-form">
+                        <h5>Add Your Review</h5>
+                        <form asp-action="AddRating" method="post">
+                            <input type="hidden" name="productId" value="@Model.Id" />
+                            <div class="form-group">
+                                <label for="RateTo5">Rating (1-5):</label>
+                                <select id="RateTo5" name="RateTo5" class="form-control" required>
+                                    <option value="">Select a rating</option>
+                                    <option value="5">5 - Excellent</option>
+                                    <option value="4">4 - Very Good</option>
+                                    <option value="3">3 - Good</option>
+                                    <option value="2">2 - Fair</option>
+                                    <option value="1">1 - Poor</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="Comment">Your Review:</label>
+                                <textarea id="Comment" name="Comment" class="form-control" rows="3" placeholder="Share your experience with this product"></textarea>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Submit Review</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            @if (ViewBag.IsAdmin)
+            {
+                <div class="product-card">
+                    <div class="product-info">
+                        <div class="section-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-tag" viewBox="0 0 16 16">
+                                <path d="M6 4.5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0zm-1 0a.5.5 0 1 0-1 0 .5.5 0 0 0 1 0z"/>
+                                <path d="M2 1h4.586a1 1 0 0 1 .707.293l7 7a1 1 0 0 1 0 1.414l-4.586 4.586a1 1 0 0 1-1.414 0l-7-7A1 1 0 0 1 1 6.586V2a1 1 0 0 1 1-1zm0 5.586 7 7L13.586 9l-7-7H2v4.586z"/>
+                            </svg>
+                            Price Offers
+                        </div>
+                        
+                        @if (Model.Offers != null && Model.Offers.Any())
+                        {
+                            <ul class="offers-list">
+                                @foreach (var offer in Model.Offers)
+                                {
+                                    <li class="offer-item">
+                                        <span class="offer-price">$@offer.Price</span>
+                                    </li>
+                                }
+                            </ul>
+                        }
+                        else
+                        {
+                            <p>No offers available for this product.</p>
+                        }
+                        
+                        <div class="offer-form">
+                            <h5>Add New Offer</h5>
+                            <form asp-action="AddOffer" method="post">
+                                <input type="hidden" name="productId" value="@Model.Id" />
+                                <div class="form-group">
+                                    <label for="newPrice">Offer Price ($):</label>
+                                    <input type="number" id="newPrice" name="newPrice" class="form-control" placeholder="Enter offer price" step="0.01" required />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Create Offer</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 </div>
-
-
