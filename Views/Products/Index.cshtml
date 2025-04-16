@@ -37,64 +37,239 @@
       <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.~/js"></script>
       <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.~/js"></script><![endif]-->
 </head>
-<!-- body -->
-<h1>Index</h1>
 
 
 @if (ViewBag.IsAdmin)
 {
-    <p>
-   
-        <button class="btn btn-info"> <a asp-action="Create">Sell New One</a></button>
+    <div class="admin-dashboard">
+        <div class="admin-header">
+            <h3>Admin Dashboard</h3>
+            <p>Manage your store and products</p>
+        </div>
+        <div class="admin-actions">
+            <a asp-action="Create" class="admin-action-card">
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle-fill" viewBox="0 0 16 16">
+                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8.5 4.5a.5.5 0 0 0-1 0v3h-3a.5.5 0 0 0 0 1h3v3a.5.5 0 0 0 1 0v-3h3a.5.5 0 0 0 0-1h-3v-3z"/>
+                    </svg>
+                </div>
+                <div class="action-text">
+                    <strong>Add Product</strong>
+                    <span>Create a new product listing</span>
+                </div>
+            </a>
+            <a asp-controller="_User" asp-action="index" class="admin-action-card">
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-people-fill" viewBox="0 0 16 16">
+                        <path d="M7 14s-1 0-1-1 1-4 5-4 5 3 5 4-1 1-1 1H7zm4-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
+                        <path fill-rule="evenodd" d="M5.216 14A2.238 2.238 0 0 1 5 13c0-1.355.68-2.75 1.936-3.72A6.325 6.325 0 0 0 5 9c-4 0-5 3-5 4s1 1 1 1h4.216z"/>
+                        <path d="M4.5 8a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/>
+                    </svg>
+                </div>
+                <div class="action-text">
+                    <strong>User Management</strong>
+                    <span>View and manage user accounts</span>
+                </div>
+            </a>
+            <a asp-controller="Products" asp-action="Orders" class="admin-action-card">
+                <div class="icon-container">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-bag-check-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M10.5 3.5a2.5 2.5 0 0 0-5 0V4h5v-.5zm1 0V4H15v10a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V4h3.5v-.5a3.5 3.5 0 1 1 7 0zm-.646 5.354a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z"/>
+                    </svg>
+                </div>
+                <div class="action-text">
+                    <strong>Order Management</strong>
+                    <span>View and manage customer orders</span>
+                </div>
+            </a>
+        </div>
+    </div>
 
-    </p>
-    <br />
-    <p>
-        <button class="btn btn-warning">  <a asp-controller="_User" asp-action="index">Manage Users</a></button>
-    </p>
-    @* <p>
-        <button class="btn btn-warning">  <a asp-controller="Products" asp-action="Orders">Orders</a></button>
-    </p> *@
+    <style>
+        .admin-dashboard {
+            background: linear-gradient(to right, #fff, #f8f9fa);
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .admin-header {
+            margin-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .admin-header h3 {
+            color: #2c3e50;
+            font-size: 22px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .admin-header p {
+            color: #7f8c8d;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+        
+        .admin-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .admin-action-card {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-decoration: none;
+            color: #2c3e50;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+            border: 1px solid #e9ecef;
+        }
+        
+        .admin-action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border-color: #dee2e6;
+        }
+        
+        .icon-container {
+            width: 45px;
+            height: 45px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .admin-action-card:nth-child(1) .icon-container {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #3498db;
+        }
+        
+        .admin-action-card:nth-child(2) .icon-container {
+            background-color: rgba(155, 89, 182, 0.1);
+            color: #9b59b6;
+        }
+        
+        .admin-action-card:nth-child(3) .icon-container {
+            background-color: rgba(46, 204, 113, 0.1);
+            color: #2ecc71;
+        }
+        
+        .action-text {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .action-text strong {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 3px;
+        }
+        
+        .action-text span {
+            font-size: 13px;
+            color: #7f8c8d;
+        }
+        
+        @* @media (max-width: 768px) {
+            .admin-actions {
+                flex-direction: column;
+            }
+            
+            .admin-action-card {
+                width: 100%;
+            }
+        } *@
+    </style>
 }
 <body class="main-layout">
-    <div class="brand_color">
+    <div class="hero-section">
         <div class="container">
-            <div class="row">
-                <div class="col-md-12">
-                    <div class="titlepage">
-                        <h2>Our Brand</h2>
-                    </div>
+            <div class="hero-content">
+                <h1 class="hero-title">Discover Our Premium Tech Products</h1>
+                <p class="hero-subtitle">Explore our extensive collection of cutting-edge technology products, designed to enhance your digital lifestyle.</p>
+                <div class="search-container">
+                    <form asp-action="Search" asp-controller="Products" method="get">
+                        <input type="text" name="searchTerm" class="search-input" placeholder="Search for products..." />
+                        <button type="submit" class="search-button">Search</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
+
+    @if (ViewBag.SearchTerm != null)
+    {
+        <div class="container">
+            <div class="search-results-header">
+                <h2>Search Results for: "@ViewBag.SearchTerm"</h2>
+                <a asp-action="Index" class="btn btn-outline-secondary">Clear Search</a>
+            </div>
+        </div>
+    }
+
     <!-- brand -->
     <div class="brand">
         <div class="container">
-        </div>
-        <div class="brand-bg">
-            <div class="container">
-                <div class="row">
-                    @foreach (var item in Model.OrderBy(x => x.CreatedAt))
-                    {
-                            <div class="col-xl-4 col-lg-4 col-md-6 col-sm-12">
-                                <div class="brand_box">
-                                    <img src="~/images/@item.Pic" alt="img" />
+            <div class="section-title">
+                <h2>Our Products</h2>
+            </div>
+            <div class="row">
+                @foreach (var item in Model.OrderBy(x => x.CreatedAt))
+                {
+                    <div class="col-xl-3 col-lg-4 col-md-6 col-sm-12">
+                        <div class="brand_box">
+                            <div class="image-container">
+                                <img src="~/images/@item.Pic" alt="@item.Name" />
+                            </div>
+                            <div class="card-overlay">
+                                <div class="card-badge">
                                     @if (item.NewPrice != null)
                                     {
-                                        <h3><s>$<strong class="red">@Html.DisplayFor(modelItem => item.Price)</strong></s> $<strong class="red">@item.NewPrice.Value</strong></h3>
+                                        <span class="badge-sale">Sale</span>
                                     }
                                     else
                                     {
-                                        <h3>$<strong class="red">@Html.DisplayFor(modelItem => item.Price)</strong></h3>
+                                        <span class="badge-new">New</span>
                                     }
-                                    <span>
-                                        @Html.DisplayFor(modelItem => item.Name)
-                                    </span>
-                                    <span>
-                                        @Html.DisplayFor(modelItem => item.Model)
-                                    </span>
-                                    <div>
+                                </div>
+                            </div>
+                            <div class="product-details">
+                                <div class="price-tag">
+                                    @if (item.NewPrice != null)
+                                    {
+                                        <span class="current-price">$@item.NewPrice.Value</span>
+                                        <span class="original-price">$@item.Price</span>
+                                        
+                                        decimal discountPercentage = Math.Round((1 - ((decimal)item.NewPrice.Value / (decimal)item.Price)) * 100);
+                                        
+                                        <span class="discount-percentage">-@discountPercentage%</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="current-price">$@item.Price</span>
+                                    }
+                                </div>
+                                <span class="product-name">
+                                    @Html.DisplayFor(modelItem => item.Name)
+                                </span>
+                                <span class="product-model">
+                                    @Html.DisplayFor(modelItem => item.Model)
+                                </span>
+                                <div class="product-rating">
+                                    <div class="rating-stars">
                                         @{
                                             int fullStars = (int)item.AverageRating;
                                             int halfStar = (item.AverageRating - fullStars) >= 0.5 ? 1 : 0;
@@ -102,35 +277,38 @@
                                         }
                                         @for (int i = 0; i < fullStars; i++)
                                         {
-                                            <i><img src="~/images/star.png" alt="Full Star" style="max-width: 20px;"/></i>
+                                            <img src="~/images/star.png" alt="Full Star" />
                                         }
                                         @if (halfStar == 1)
                                         {
-                                            <i><img src="~/images/half-star.png" alt="Half Star" style="max-width: 20px;"/></i>
+                                            <img src="~/images/half-star.png" alt="Half Star" />
                                         }
                                         @for (int i = 0; i < emptyStars; i++)
                                         {
-                                            <i><img src="~/images/empty-star.png" alt="Empty Star" style="max-width: 20px;"/></i>
+                                            <img src="~/images/empty-star.png" alt="Empty Star" />
                                         }
                                     </div>
-                                    <span>
-                                        <button class="btn btn-info">   <a asp-action="Details" asp-route-id="@item.Id">Show More</a></button>
-                                    </span>
+                                    <span class="rating-count">@Math.Round(item.AverageRating, 1)</span>
+                                </div>
+                                <div class="card-actions">
+                                    <button class="btn btn-details">
+                                        <a asp-action="Details" asp-route-id="@item.Id">Show Details</a>
+                                    </button>
                                     @if(userId != null && userId != 1) {
                                         @if(item.IsSall == true) {
-                                            <span class="text-danger">Sold</span>
+                                            <button class="btn btn-sold">Sold Out</button>
                                         }
                                         else {
-                                            <button class="btn btn-primary">
-                                                <a asp-action="AddToCart" asp-controller="Products" asp-route-productId="@item.Id" style="color: white; text-decoration: none;">Add to Cart</a>
+                                            <button class="btn btn-cart">
+                                                <a asp-action="AddToCart" asp-controller="Products" asp-route-productId="@item.Id">Add to Cart</a>
                                             </button>
                                         }
                                     }
-                                    
                                 </div>
                             </div>
-                    }
-                </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -176,23 +354,370 @@
     </script>
 </body>
 <style>
+    /* Page Background */
+    body {
+        background-color: #f5f7fa;
+    }
+    
+    /* Product Section */
+    .brand {
+        padding: 40px 0;
+        background-color: #f5f7fa;
+    }
+    
+    .section-title {
+        text-align: center;
+        margin-bottom: 30px;
+        position: relative;
+    }
+    
+    .section-title h2 {
+        font-size: 32px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 15px;
+    }
+    
+    .section-title:after {
+        content: '';
+        width: 80px;
+        height: 3px;
+        background-color: #007bff;
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    
+    /* Enhanced Product Cards */
     .brand_box {
-        border: 1px solid #ddd;
-        padding: 15px;
+        border: none;
+        border-radius: 16px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.07);
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 30px;
+        padding: 0;
+        height: 100%;
+    }
+    
+    .brand_box:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+    }
+    
+    .image-container {
+        position: relative;
+        overflow: hidden;
+        height: 200px;
+        border-radius: 16px 16px 0 0;
+        background: linear-gradient(135deg, #f5f7fa, #e4e8eb);
+    }
+    
+    .image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.6s ease;
+    }
+    
+    .brand_box:hover .image-container img {
+        transform: scale(1.1);
+    }
+    
+    .card-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.7) 0%, rgba(0, 0, 0, 0) 100%);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+    }
+    
+    .brand_box:hover .card-overlay {
+        opacity: 1;
+    }
+    
+    .card-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        z-index: 10;
+    }
+    
+    .badge-new {
+        background-color: #4CAF50;
+        color: white;
+    }
+    
+    .badge-sale {
+        background-color: #FF5252;
+        color: white;
+    }
+    
+    .badge-sold {
+        background-color: #455A64;
+        color: white;
+    }
+    
+    .product-details {
+        padding: 20px;
+    }
+    
+    .price-tag {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+    
+    .current-price {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2D3748;
+    }
+    
+    .original-price {
+        font-size: 16px;
+        font-weight: 400;
+        color: #A0AEC0;
+        text-decoration: line-through;
+    }
+    
+    .discount-percentage {
+        font-size: 14px;
+        font-weight: 600;
+        color: #FF5252;
+    }
+    
+    .product-name {
+        font-size: 18px;
+        font-weight: 700;
+        color: #1A202C;
+        margin-bottom: 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    
+    .product-model {
+        font-size: 14px;
+        color: #718096;
+        margin-bottom: 15px;
+    }
+    
+    .product-rating {
+        display: flex;
+        align-items: center;
         margin-bottom: 20px;
-        border-radius: 5px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     }
-    .brand_box img {
-        max-width: 100%;
-        height: auto;
-        margin-bottom: 10px;
+    
+    .rating-stars {
+        display: flex;
+        margin-right: 10px;
     }
-    .btn-info a, .btn-warning a {
+    
+    .rating-stars img {
+        width: 16px;
+        height: 16px;
+        margin-right: 3px;
+    }
+    
+    .rating-count {
+        font-size: 14px;
+        color: #718096;
+    }
+    
+    .card-actions {
+        display: flex;
+        gap: 10px;
+        position: relative;
+        z-index: 10;
+    }
+    
+    .btn-details {
+        flex: 1;
+        background: linear-gradient(135deg, #667EEA, #764BA2);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 0;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-details:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 14px rgba(102, 126, 234, 0.4);
+    }
+    
+    .btn-cart {
+        flex: 1;
+        background: linear-gradient(135deg, #38B2AC, #319795);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 0;
+        font-size: 14px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn-cart:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 14px rgba(56, 178, 172, 0.4);
+    }
+    
+    .btn-sold {
+        flex: 1;
+        background: #E2E8F0;
+        color: #4A5568;
+        border: none;
+        border-radius: 8px;
+        padding: 10px 0;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: not-allowed;
+    }
+    
+    .btn-details a, .btn-cart a {
         color: white;
         text-decoration: none;
+        display: block;
+        text-align: center;
     }
-    .btn-info a:hover, .btn-warning a:hover {
-        color: #ddd;
+
+    /* Hero Section Styling */
+    .hero-section {
+        background: linear-gradient(135deg, #3498db, #8e44ad);
+        padding: 60px 0;
+        margin-bottom: 40px;
+        border-radius: 0 0 50px 50px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .hero-section:before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 300px;
+        height: 300px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 1;
+    }
+    
+    .hero-section:after {
+        content: '';
+        position: absolute;
+        bottom: -80px;
+        left: -80px;
+        width: 400px;
+        height: 400px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        z-index: 1;
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+    }
+    
+    .hero-title {
+        color: #ffffff;
+        font-size: 42px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+        letter-spacing: 1px;
+    }
+    
+    .hero-subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 18px;
+        font-weight: 400;
+        max-width: 700px;
+        margin: 0 auto 30px;
+        line-height: 1.6;
+    }
+    
+    .search-container {
+        max-width: 600px;
+        margin: 0 auto;
+        position: relative;
+    }
+    
+    .search-input {
+        width: 100%;
+        padding: 15px 20px;
+        border-radius: 30px;
+        border: none;
+        font-size: 16px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+    
+    .search-input:focus {
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        outline: none;
+    }
+    
+    .search-button {
+        position: absolute;
+        right: 5px;
+        top: 5px;
+        background: linear-gradient(135deg, #3498db, #2980b9);
+        color: white;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    
+    .search-button:hover {
+        background: linear-gradient(135deg, #2980b9, #3498db);
+        transform: translateY(-2px);
+    }
+
+    .search-results-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .search-results-header h2 {
+        margin-bottom: 0;
+        color: #3498db;
+        font-size: 24px;
+    }
+
+    .btn-outline-secondary {
+        border-radius: 20px;
+        padding: 5px 15px;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-secondary:hover {
+        transform: translateY(-2px);
     }
 </style>

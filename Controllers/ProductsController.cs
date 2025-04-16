@@ -490,5 +490,37 @@ namespace Ali_Store.Controllers
             TempData["ToastType"] = "success";
             return RedirectToAction("Index");
         }
+
+        public async Task<IActionResult> Search(string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+            {
+                return RedirectToAction("Index");
+            }
+
+            ViewBag.SearchTerm = searchTerm;
+            var U_id = HttpContext.Session.GetInt32("User_id");
+            ViewBag.IsAdmin = U_id == 1;
+
+            var lowercaseSearchTerm = searchTerm.ToLower();
+            
+            var products = await _context.Products
+                .Include(p => p.Rates)
+                .Where(p => p.Name.ToLower().Contains(lowercaseSearchTerm) || 
+                           p.Model.ToLower().Contains(lowercaseSearchTerm) || 
+                           p.Type.ToLower().Contains(lowercaseSearchTerm) || 
+                           p.GoodFor.ToLower().Contains(lowercaseSearchTerm))
+                .ToListAsync();
+
+            foreach (var product in products)
+            {
+                product.AverageRating = product.Rates.Any() ? product.Rates.Average(r => r.RateTo5) : 0;
+            }
+
+            TempData["ToastMessage"] = $"Found {products.Count} results for '{searchTerm}'";
+            TempData["ToastType"] = "info";
+            
+            return View("Index", products);
+        }
     }
 }

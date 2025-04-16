@@ -4,73 +4,242 @@
     ViewData["Title"] = "SignUp";
 }
 <style>
-    .divider:after,
-.divider:before {
-content: "";
-flex: 1;
-height: 1px;
-background: #eee;
-}
-.h-custom {
-height: calc(100% - 73px);
-}
-@@media (max-width: 450px) {
-.h-custom {
-height: 100%;
-}
-}
+    .auth-container {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #f5f7fa 0%, #e4e8eb 100%);
+        padding: 30px 0;
+    }
+    
+    .auth-card {
+        background-color: #ffffff;
+        border-radius: 20px;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 40px auto;
+        max-width: 1000px;
+    }
+    
+    .auth-row {
+        display: flex;
+        flex-wrap: wrap;
+    }
+    
+    .auth-brand {
+        background: linear-gradient(135deg, #253453 0%, #1a2541 100%);
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        position: relative;
+    }
+    
+    
+    @* @keyframes pulse {
+        0% {
+            transform: translate(0, 0);
+        }
+        50% {
+            transform: translate(-10%, 10%);
+        }
+        100% {
+            transform: translate(0, 0);
+        }
+    } *@
+    
+    .auth-brand img {
+        max-width: 80%;
+        height: auto;
+        margin-bottom: 20px;
+        position: relative;
+        z-index: 1;
+        filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.2));
+    }
+    
+    .auth-brand h2 {
+        font-size: 28px;
+        font-weight: 700;
+        margin-bottom: 15px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .auth-brand p {
+        font-size: 16px;
+        opacity: 0.8;
+        text-align: center;
+        max-width: 300px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .auth-form {
+        padding: 40px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    .auth-form h3 {
+        font-size: 24px;
+        font-weight: 700;
+        color: #2c3e50;
+        margin-bottom: 30px;
+    }
+    
+    .form-group {
+        position: relative;
+        margin-bottom: 25px;
+    }
+    
+    .form-control {
+        height: 55px;
+        padding: 10px 20px;
+        font-size: 15px;
+        border-radius: 10px;
+        border: 2px solid #eaeaea;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: #253453;
+        box-shadow: 0 0 0 3px rgba(37, 52, 83, 0.1);
+    }
+    
+    .form-label {
+        position: absolute;
+        top: 15px;
+        left: 20px;
+        font-size: 15px;
+        color: #95a5a6;
+        transition: all 0.3s ease;
+        pointer-events: none;
+    }
+    
+    .form-control:focus ~ .form-label,
+    .form-control:not(:placeholder-shown) ~ .form-label {
+        top: -12px;
+        left: 15px;
+        font-size: 12px;
+        background-color: white;
+        padding: 0 5px;
+        color: #253453;
+        font-weight: 600;
+    }
+    
+    .auth-btn {
+        background: linear-gradient(135deg, #253453 0%, #1a2541 100%);
+        color: white;
+        border: none;
+        border-radius: 10px;
+        padding: 15px 40px;
+        font-size: 16px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        margin-top: 10px;
+        cursor: pointer;
+    }
+    
+    .auth-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 7px 14px rgba(37, 52, 83, 0.2);
+    }
+    
+    .auth-link {
+        color: #253453;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .auth-link:hover {
+        color: #1a2541;
+        text-decoration: underline;
+    }
+    
+    .auth-footer {
+        margin-top: 20px;
+        font-size: 14px;
+        color: #7f8c8d;
+    }
+    
+    .row-cols-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+    
+    /* Responsive */
+    @* @media (max-width: 991px) {
+        .auth-brand, .auth-form {
+            width: 100%;
+        }
+        
+        .auth-brand {
+            padding: 30px;
+        }
+        
+        .row-cols-2 {
+            grid-template-columns: 1fr;
+        }
+    } *@
 </style>
-<section class="vh-100">
-    <div class="container-fluid h-custom">
-        <div class="row d-flex justify-content-center align-items-center h-100">
-            <div class="col-md-9 col-lg-6 col-xl-5">
-                <img src="~/images/logo-dark.png"
-                     class="img-fluid" alt="Sample image">
+
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="row auth-row">
+            <div class="col-lg-6 auth-brand">
+                <img src="~/images/logo-dark.png" alt="Day Tech Logo">
+                <h2>Join Day Tech</h2>
+                <p>Create an account to start shopping for the latest technology products.</p>
             </div>
-            <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+            <div class="col-lg-6 auth-form">
+                <h3>Create Your Account</h3>
                 <form asp-action="Create">
-                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            
-                    <!-- First Name input -->
-                    <div class="form-outline mb-4">
-                        <input id="form3Example2" class="form-control form-control-lg"
-                               placeholder="Enter a valid name" asp-for="FirstName" name="FirstName" />
-                        <label class="form-label" for="form3Example2" asp-for="FirstName">First Name</label>
-                        <span asp-validation-for="FirstName" class="text-danger"></span>
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-4"></div>
+                    
+                    <div class="row-cols-2">
+                        <div class="form-group">
+                            <input class="form-control" id="firstNameInput" 
+                                   placeholder=" " asp-for="FirstName" name="FirstName">
+                            <label class="form-label" for="firstNameInput">First Name</label>
+                            <span asp-validation-for="FirstName" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group">
+                            <input class="form-control" id="lastNameInput" 
+                                   placeholder=" " asp-for="LastName" name="LastName">
+                            <label class="form-label" for="lastNameInput">Last Name</label>
+                            <span asp-validation-for="LastName" class="text-danger"></span>
+                        </div>
                     </div>
-                    <!-- Last Name input -->
-                    <div class="form-outline mb-4">
-                        <input id="form3Example5" class="form-control form-control-lg"
-                               placeholder="Enter a valid name" asp-for="LastName" name="LastName" />
-                        <label class="form-label" for="form3Example5" asp-for="LastName">Last Name</label>
-                        <span asp-validation-for="LastName" class="text-danger"></span>
-                    </div>
-                    <!-- Email input -->
-                    <div class="form-outline mb-4">
-                        <input type="email" id="form3Example3" class="form-control form-control-lg"
-                               placeholder="Enter a valid email address" asp-for="EMail" name="EMail" />
-                        <label class="form-label" for="form3Example3" asp-for="EMail">Email address</label>
+                    
+                    <div class="form-group">
+                        <input type="email" class="form-control" id="emailInput" 
+                               placeholder=" " asp-for="EMail" name="EMail">
+                        <label class="form-label" for="emailInput">Email Address</label>
                         <span asp-validation-for="EMail" class="text-danger"></span>
                     </div>
-
-                    <!-- Password input -->
-                    <div class="form-outline mb-3">
-                        <input type="password" id="form3Example4" class="form-control form-control-lg"
-                               placeholder="Enter password" asp-for="Password" name="Password" />
-                        <label class="form-label" for="form3Example4" asp-for="Password">Password</label>
+                    
+                    <div class="form-group">
+                        <input type="password" class="form-control" id="passwordInput" 
+                               placeholder=" " asp-for="Password" name="Password">
+                        <label class="form-label" for="passwordInput">Password</label>
                         <span asp-validation-for="Password" class="text-danger"></span>
                     </div>
-
-                    <div class="text-center text-lg-start mt-4 pt-2">
-                        <input class="btn btn-primary btn-lg"
-                               style="padding-left: 2.5rem; padding-right: 2.5rem;" type="submit" value="Create" />                        
+                    
+                    <button type="submit" class="auth-btn">Create Account</button>
+                    
+                    <div class="auth-footer">
+                        Already have an account? <a asp-action="Login" class="auth-link">Sign in</a>
                     </div>
-
                 </form>
             </div>
         </div>
-    </div>    
-</section>
+    </div>
+</div>
+
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
