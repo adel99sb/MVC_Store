@@ -465,7 +465,8 @@ namespace Ali_Store.Controllers
                 TotalPrice = cart.TotalPrice,
                 NumberOfItems = cart.Items.Count
             };
-
+            user.Amount -= order.TotalPrice;
+            _context.Users.Update(user);
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
