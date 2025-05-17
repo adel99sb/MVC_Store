@@ -55,7 +55,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,EMail,Password")] _User _User)
+        public async Task<IActionResult> Create([Bind("Id,FirstName,LastName,EMail,Password,PhoneNumber,StreetAddress,City")] _User _User)
         {
             if (ModelState.IsValid)
             {
@@ -111,7 +111,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,EMail,Password,Amount")] _User _User)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,FirstName,LastName,EMail,Password,PhoneNumber,StreetAddress,City,Amount")] _User _User)
         {
             if (id != _User.Id)
             {

@@ -223,6 +223,27 @@
                     </div>
                     
                     <div class="form-group">
+                        <input type="tel" class="form-control" id="phoneInput" 
+                               placeholder=" " asp-for="PhoneNumber" name="PhoneNumber">
+                        <label class="form-label" for="phoneInput">Phone Number</label>
+                        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input class="form-control" id="streetAddressInput" 
+                               placeholder=" " asp-for="StreetAddress" name="StreetAddress">
+                        <label class="form-label" for="streetAddressInput">Street Address</label>
+                        <span asp-validation-for="StreetAddress" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input class="form-control" id="cityInput" 
+                               placeholder=" " asp-for="City" name="City">
+                        <label class="form-label" for="cityInput">City</label>
+                        <span asp-validation-for="City" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group">
                         <input type="password" class="form-control" id="passwordInput" 
                                placeholder=" " asp-for="Password" name="Password">
                         <label class="form-label" for="passwordInput">Password</label>

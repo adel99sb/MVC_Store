@@ -324,16 +324,73 @@
                     <span class="total-label">Total</span>
                     <span class="total-amount">$@Model.TotalPrice</span>
                 </div>
-                <a asp-action="PurchaseCart" class="btn btn-purchase">
+                <button type="button" class="btn btn-purchase" id="showCheckoutModal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-credit-card" viewBox="0 0 16 16">
                         <path d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v1h14V4a1 1 0 0 0-1-1H2zm13 4H1v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V7z"/>
                         <path d="M2 10a1 1 0 0 1 1-1h1a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-1z"/>
                     </svg>
                     Purchase Now
-                </a>
+                </button>
             </div>
         </div>
     }
+</div>
+
+<!-- Checkout Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="checkoutModalLabel">Confirm Your Information</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Please verify or update your shipping information before completing your purchase.</p>
+                
+                <form id="checkoutForm" asp-action="PurchaseCart" method="post">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="firstName" class="form-label">First Name</label>
+                            <input type="text" class="form-control" id="firstName" name="FirstName" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="lastName" class="form-label">Last Name</label>
+                            <input type="text" class="form-control" id="lastName" name="LastName" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="phoneNumber" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="phoneNumber" name="PhoneNumber" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="streetAddress" class="form-label">Street Address</label>
+                        <input type="text" class="form-control" id="streetAddress" name="StreetAddress" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="city" class="form-label">City</label>
+                        <input type="text" class="form-control" id="city" name="City" required>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <div>
+                            <h5>Order Summary</h5>
+                            <p class="mb-1">Total Items: <strong>@Model.Items.Sum(i => i.Quantity)</strong></p>
+                            <p class="mb-1">Total Amount: <strong>$@Model.TotalPrice</strong></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="checkoutForm" class="btn btn-success">
+                    Complete Purchase
+                </button>
+            </div>
+        </div>
+    </div>
 </div>
 
 @section Scripts {
@@ -351,5 +408,27 @@
                 input.value = currentValue - 1;
             }
         }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get user information when the checkout button is clicked
+            document.getElementById('showCheckoutModal').addEventListener('click', function() {
+                fetch('/Products/GetUserInfo')
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('firstName').value = data.firstName || '';
+                        document.getElementById('lastName').value = data.lastName || '';
+                        document.getElementById('phoneNumber').value = data.phoneNumber || '';
+                        document.getElementById('streetAddress').value = data.streetAddress || '';
+                        document.getElementById('city').value = data.city || '';
+                        
+                        // Show the modal
+                        var myModal = new bootstrap.Modal(document.getElementById('checkoutModal'));
+                        myModal.show();
+                    })
+                    .catch(error => {
+                        console.error('Error fetching user information:', error);
+                    });
+            });
+        });
     </script>
 } 

@@ -607,7 +607,7 @@ namespace Ali_Store.Controllers
             return RedirectToAction("Cart");
         }
 
-        public async Task<IActionResult> PurchaseCart()
+        public async Task<IActionResult> PurchaseCart(string FirstName, string LastName, string PhoneNumber, string StreetAddress, string City)
         {
             var userId = HttpContext.Session.GetInt32("User_id");
             if (userId == null)
@@ -673,6 +673,13 @@ namespace Ali_Store.Controllers
                 return NotFound("User not found.");
             }
 
+            // Update user information
+            user.FirstName = FirstName;
+            user.LastName = LastName;
+            user.PhoneNumber = PhoneNumber;
+            user.StreetAddress = StreetAddress;
+            user.City = City;
+            
             if (user.Amount < cart.TotalPrice)
             {
                 TempData["ToastMessage"] = "Insufficient balance!";
@@ -803,6 +810,31 @@ namespace Ali_Store.Controllers
             TempData["ToastMessage"] = "Quantity updated!";
             TempData["ToastType"] = "success";
             return RedirectToAction("Cart");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetUserInfo()
+        {
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
+            {
+                return Json(new { error = "User not logged in" });
+            }
+
+            var user = await _context.Users.FindAsync(userId);
+            if (user == null)
+            {
+                return Json(new { error = "User not found" });
+            }
+
+            return Json(new
+            {
+                firstName = user.FirstName,
+                lastName = user.LastName,
+                phoneNumber = user.PhoneNumber,
+                streetAddress = user.StreetAddress,
+                city = user.City
+            });
         }
     }
 }
