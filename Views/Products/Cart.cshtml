@@ -288,11 +288,13 @@
                                 <td class="product-price">
                                     @if(item.Product.NewPrice != null)
                                     {
-                                        <span>$@item.Product.NewPrice</span>
+                                        <span>$@item.Product.NewPrice <small>per unit</small></span>
+                                        <div class="mt-1"><strong>Total: $@(item.Quantity * item.Product.NewPrice)</strong></div>
                                     }
                                     else
                                     {
-                                        <span>$@item.Product.Price</span>
+                                        <span>$@item.Product.Price <small>per unit</small></span>
+                                        <div class="mt-1"><strong>Total: $@(item.Quantity * item.Product.Price)</strong></div>
                                     }
                                 </td>
                                 <td>

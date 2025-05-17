@@ -73,7 +73,7 @@ namespace Ali_Store.Controllers
                 ViewBag.IsAdmin = false;
             return View(product);
         }
-        public async Task<IActionResult> Buy(int? id)
+        public async Task<IActionResult> Buy(int? id, int quantity = 1)
         {
             var U_id = HttpContext.Session.GetInt32("User_id");
             if(U_id == null) {
@@ -81,7 +81,7 @@ namespace Ali_Store.Controllers
             }
             var User = _context.Users.Find(U_id);
             var AUser = _context.Users.Find(1);
-            var prduct = _context.Products.Find(id);
+            var product = _context.Products.Find(id);
 
             if (User == null)
             {
@@ -93,36 +93,66 @@ namespace Ali_Store.Controllers
                 return NotFound("Admin user not found.");
             }
 
-            if (prduct == null)
+            if (product == null)
             {
                 return NotFound("Product not found.");
             }
-            var OPrice = prduct.Price;
-            prduct.IsSall = true;
-            if(prduct.NewPrice != null)
-            {
-                OPrice = (float)prduct.NewPrice;
-            }
-            User.Amount -= OPrice;
-            AUser.Amount += OPrice;
             
-            var reder = new Order()
+            if (product.AvailableQuantity < quantity)
+            {
+                TempData["ToastMessage"] = $"Only {product.AvailableQuantity} units available!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Details", new { id = product.Id });
+            }
+            
+            if (product.AvailableQuantity <= 0)
+            {
+                TempData["ToastMessage"] = "This product is out of stock!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Details", new { id = product.Id });
+            }
+            
+            var OPrice = product.Price;
+            
+            // Decrease available quantity
+            product.AvailableQuantity -= quantity;
+            
+            // If no more available, mark as sold
+            if (product.AvailableQuantity <= 0)
+            {
+                product.IsSall = true;
+            }
+            
+            if(product.NewPrice != null)
+            {
+                OPrice = (float)product.NewPrice;
+            }
+            
+            // Calculate total price based on quantity
+            float totalPrice = OPrice * quantity;
+            
+            User.Amount -= totalPrice;
+            AUser.Amount += totalPrice;
+            
+            var order = new Order()
             {
                 User = User,
-                TotalPrice = OPrice,
-                Date = DateTime.Now
+                TotalPrice = totalPrice,
+                Date = DateTime.Now,
+                NumberOfItems = quantity
             };
             
-            var Order = _context.Orders.Add(reder);
+            var savedOrder = _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
-            var OrderItem = new OrderItem()
+            var orderItem = new OrderItem()
             {
-                OrderId = Order.Entity.Id,
-                ProductId = prduct.Id
+                OrderId = savedOrder.Entity.Id,
+                ProductId = product.Id,
+                Quantity = quantity
             };
-            _context.OrderItems.Add(OrderItem);
-            _context.Products.Update(prduct);
+            _context.OrderItems.Add(orderItem);
+            _context.Products.Update(product);
             _context.Users.Update(User);
             await _context.SaveChangesAsync();
             TempData["ToastMessage"] = "Product bought successfully!";
@@ -140,7 +170,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Type,Model,Price,Pic,GoodFor")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Type,Model,Price,Pic,GoodFor,Quantity")] Product product)
         {
             if (Request.Form.Files.Count != 0)
             {
@@ -161,6 +191,9 @@ namespace Ali_Store.Controllers
             }
             if (ModelState.IsValid)
             {
+                // Set available quantity equal to total quantity initially
+                product.AvailableQuantity = product.Quantity;
+                
                 _context.Add(product);
                 await _context.SaveChangesAsync();
                 TempData["ToastMessage"] = "Product created successfully!";
@@ -193,7 +226,7 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic,GoodFor,NewPrice")] Product product)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,Type,Model,Price,Pic,GoodFor,NewPrice,Quantity,AvailableQuantity")] Product product)
         {
             if (id != product.Id)
             {
@@ -222,6 +255,22 @@ namespace Ali_Store.Controllers
                             
                             // Update the product's Pic property with the new filename
                             product.Pic = fileName;
+                        }
+                    }
+                    
+                    // Check if AvailableQuantity has changed
+                    var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == product.Id);
+                    if (existingProduct != null)
+                    {
+                        // If available quantity is now zero, mark product as sold
+                        if (product.AvailableQuantity <= 0)
+                        {
+                            product.IsSall = true;
+                        }
+                        // If available quantity has increased, make sure product is not marked as sold
+                        else if (product.AvailableQuantity > 0 && existingProduct.AvailableQuantity <= 0)
+                        {
+                            product.IsSall = false;
                         }
                     }
 
@@ -473,6 +522,20 @@ namespace Ali_Store.Controllers
                 return NotFound("Product not found.");
             }
 
+            if (product.AvailableQuantity <= 0)
+            {
+                TempData["ToastMessage"] = "This product is out of stock!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("index", "Products");
+            }
+
+            if (quantity > product.AvailableQuantity)
+            {
+                quantity = product.AvailableQuantity;
+                TempData["ToastMessage"] = $"Only {quantity} items available. Added maximum available to cart.";
+                TempData["ToastType"] = "warning";
+            }
+
             var cart = await _context.Carts
                 .Include(c => c.Items)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
@@ -487,7 +550,14 @@ namespace Ali_Store.Controllers
             var cartItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
             if (cartItem != null)
             {
-                cartItem.Quantity += quantity;
+                int newQuantity = cartItem.Quantity + quantity;
+                if (newQuantity > product.AvailableQuantity)
+                {
+                    newQuantity = product.AvailableQuantity;
+                    TempData["ToastMessage"] = $"Cart quantity adjusted to maximum available ({product.AvailableQuantity}).";
+                    TempData["ToastType"] = "warning";
+                }
+                cartItem.Quantity = newQuantity;
                 _context.CartItems.Update(cartItem);
             }
             else
@@ -502,8 +572,11 @@ namespace Ali_Store.Controllers
             }
 
             await _context.SaveChangesAsync();
-            TempData["ToastMessage"] = "Product added to cart!";
-            TempData["ToastType"] = "success";
+            if (TempData["ToastMessage"] == null) // Only if no warning was set
+            {
+                TempData["ToastMessage"] = "Product added to cart!";
+                TempData["ToastType"] = "success";
+            }
             return RedirectToAction("index", "Products");
         }
 
@@ -554,6 +627,46 @@ namespace Ali_Store.Controllers
                 return RedirectToAction("Cart");
             }
             
+            // Validate that all products are still available in requested quantities
+            bool quantityAdjusted = false;
+            foreach (var item in cart.Items)
+            {
+                if (item.Quantity > item.Product.AvailableQuantity)
+                {
+                    item.Quantity = item.Product.AvailableQuantity;
+                    quantityAdjusted = true;
+                    
+                    if (item.Product.AvailableQuantity == 0)
+                    {
+                        _context.CartItems.Remove(item);
+                        continue;
+                    }
+                    
+                    _context.CartItems.Update(item);
+                }
+            }
+            
+            if (quantityAdjusted)
+            {
+                await _context.SaveChangesAsync();
+                TempData["ToastMessage"] = "Some products in your cart are no longer available in the requested quantity.";
+                TempData["ToastType"] = "warning";
+                return RedirectToAction("Cart");
+            }
+            
+            // Refresh cart after potential adjustments
+            cart = await _context.Carts
+                .Include(c => c.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+                
+            if (cart == null || !cart.Items.Any())
+            {
+                TempData["ToastMessage"] = "All items in your cart are now out of stock!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Cart");
+            }
+            
             var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
@@ -597,19 +710,24 @@ namespace Ali_Store.Controllers
             foreach (var item in cart.Items)
             {
                 var product = await _context.Products.FindAsync(item.ProductId);
-                product.IsSall = true;
                 
-                // Create an OrderItem for each quantity
-                for (int i = 0; i < item.Quantity; i++)
+                // Decrease available quantity
+                product.AvailableQuantity -= item.Quantity;
+                
+                // Mark as sold if no more available
+                if (product.AvailableQuantity <= 0)
                 {
-                    var orderItem = new OrderItem
-                    {
-                        OrderId = order.Id,
-                        ProductId = item.ProductId
-                    };
-                    _context.OrderItems.Add(orderItem);
+                    product.IsSall = true;
                 }
                 
+                // Create a single OrderItem with proper quantity instead of multiple entries
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductId = item.ProductId,
+                    Quantity = item.Quantity
+                };
+                _context.OrderItems.Add(orderItem);
                 _context.Products.Update(product);
             }
 

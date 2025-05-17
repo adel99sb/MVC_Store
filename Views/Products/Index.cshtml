@@ -240,9 +240,17 @@
                                     {
                                         <span class="badge-sale">Sale</span>
                                     }
+                                    else if (item.AvailableQuantity <= 0)
+                                    {
+                                        <span class="badge-sold">Sold Out</span>
+                                    }
+                                    else if (item.AvailableQuantity < 5)
+                                    {
+                                        <span class="badge-limited">Limited</span>
+                                    }
                                     else
                                     {
-                                        <span class="badge-new">New</span>
+                                        <span class="badge-new">In Stock</span>
                                     }
                                 </div>
                             </div>
@@ -473,6 +481,11 @@
     .badge-sold {
         background-color: #455A64;
         color: white;
+    }
+    
+    .badge-limited {
+        background-color: #FFC107;
+        color: #212529;
     }
     
     .product-details {

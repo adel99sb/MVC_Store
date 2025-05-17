@@ -311,6 +311,26 @@
                             <div class="spec-label">Description</div>
                             <div class="spec-value">@Model.GoodFor</div>
                         </div>
+                        
+                        <div class="spec-group">
+                            <div class="spec-label">Availability</div>
+                            <div class="spec-value">
+                                @if (Model.AvailableQuantity > 10)
+                                {
+                                    <span class="badge bg-success">In Stock</span>
+                                    <span class="ms-2">@Model.AvailableQuantity units available</span>
+                                }
+                                else if (Model.AvailableQuantity > 0)
+                                {
+                                    <span class="badge bg-warning text-dark">Limited Stock</span>
+                                    <span class="ms-2">Only @Model.AvailableQuantity @(Model.AvailableQuantity == 1 ? "unit" : "units") left</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Out of Stock</span>
+                                }
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="action-buttons">

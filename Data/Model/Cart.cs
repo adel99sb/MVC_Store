@@ -15,7 +15,7 @@ namespace Ali_Store.Data.Model
         public virtual List<CartItem> Items { get; set; } = new List<CartItem>();
         
         [NotMapped]
-        public float TotalPrice => Items.Sum(item => item.Product?.NewPrice != null ? (float)item.Product.NewPrice : item.Product?.Price ?? 0);
+        public float TotalPrice => Items.Sum(item => item.Quantity * (item.Product?.NewPrice != null ? (float)item.Product.NewPrice : item.Product?.Price ?? 0));
 
         public int Quantity { get; set; }
     }

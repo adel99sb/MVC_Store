@@ -16,6 +16,9 @@ namespace Ali_Store.Data.Model
         public bool? IsApproval { get; set; } = true;
         public bool? IsSall { get; set; } = false;
         public string? Pic { get; set; }
+        public int Quantity { get; set; } = 1;
+        public int AvailableQuantity { get; set; } = 1;
+        
         [NotMapped]
         public IFormFile? PicPath { get; set; }
 
