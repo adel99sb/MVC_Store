@@ -288,8 +288,16 @@
                                 <td class="product-price">
                                     @if(item.Product.NewPrice != null)
                                     {
-                                        <span>$@item.Product.NewPrice <small>per unit</small></span>
-                                        <div class="mt-1"><strong>Total: $@(item.Quantity * item.Product.NewPrice)</strong></div>
+                                        <div>
+                                            <span style="text-decoration: line-through; color: #888;">$@item.Product.Price</span>
+                                            <span class="text-success ms-2">$@item.Product.NewPrice <small>per unit</small></span>
+                                            <div class="mt-1"><strong>Total: $@(item.Quantity * item.Product.NewPrice)</strong></div>
+                                            @{ 
+                                                var savingsPercent = (1 - (float)item.Product.NewPrice / item.Product.Price) * 100;
+                                                var savings = item.Quantity * (item.Product.Price - (float)item.Product.NewPrice);
+                                            }
+                                            <div class="text-success"><small>You save: $@savings.ToString("F2") (@savingsPercent.ToString("F0")%)</small></div>
+                                        </div>
                                     }
                                     else
                                     {
