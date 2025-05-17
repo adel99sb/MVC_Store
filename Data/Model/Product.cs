@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Http;
 
 namespace Ali_Store.Data.Model
 {
@@ -21,9 +22,13 @@ namespace Ali_Store.Data.Model
         
         [NotMapped]
         public IFormFile? PicPath { get; set; }
+        
+        [NotMapped]
+        public List<IFormFile>? ImageFiles { get; set; }
 
         public ICollection<Rate> Rates { get; set; } = new List<Rate>();
         public ICollection<Offer> Offers { get; set; } = new List<Offer>();
+        public ICollection<ProductImage> Images { get; set; } = new List<ProductImage>();
 
         [NotMapped]
         public double AverageRating { get; set; }

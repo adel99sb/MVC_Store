@@ -59,15 +59,28 @@ namespace Ali_Store.Controllers
             if (id == null || _context.Products == null)
             {
                 return NotFound();
-            }           
+            }
+
             var product = await _context.Products
-                .Include(p => p.Rates).ThenInclude(r => r.User).Include(p => p.Offers)
-                    
+                .Include(p => p.Rates)
+                .Include(p => p.Images)
                 .FirstOrDefaultAsync(m => m.Id == id);
+                
             if (product == null)
             {
                 return NotFound();
             }
+
+            // Calculate average rating
+            if (product.Rates.Any())
+            {
+                product.AverageRating = product.Rates.Average(r => r.RateTo5);
+            }
+            else
+            {
+                product.AverageRating = 0;
+            }
+
             var U_id = HttpContext.Session.GetInt32("User_id");
             if(U_id == null) {
                 return RedirectToAction("Login", "");
@@ -175,25 +188,59 @@ namespace Ali_Store.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Type,Model,Price,Pic,GoodFor,Quantity")] Product product)
+        public async Task<IActionResult> Create([Bind("Id,Name,Type,Model,GoodFor,Price,NewPrice,IsApproval,IsSall,Quantity")] Product product)
         {
-            if (Request.Form.Files.Count != 0)
+            // Handle main image upload
+            if (Request.Form.Files.Count > 0)
             {
-                var file = Request.Form.Files.First();
-                product.Pic = file.FileName;
-                using (FileStream fs = new FileStream
-                    (Path.Combine(_hostingEnvironment.WebRootPath,"Images",file.FileName), FileMode.OpenOrCreate)                   )
-                //Create the file in your file system with the name you want.
+                var mainFile = Request.Form.Files.FirstOrDefault(f => f.Name == "PicPath");
+                if (mainFile != null && mainFile.Length > 0)
                 {
-                    using (MemoryStream ms = new MemoryStream())
+                    string fileName = Path.GetFileName(mainFile.FileName);
+                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", fileName);
+                    
+                    using (FileStream fs = new FileStream(filePath, FileMode.Create))
                     {
-                        //Copy the uploaded file data to a memory stream
-                        file.CopyTo(ms);
-                        //Now write the data in the memory stream to the new file
-                        fs.Write(ms.ToArray());
+                        await mainFile.CopyToAsync(fs);
+                    }
+                    
+                    product.Pic = fileName;
+                }
+                
+                // Handle additional images
+                var additionalFiles = Request.Form.Files.Where(f => f.Name.StartsWith("ImageFiles"));
+                if (additionalFiles.Any())
+                {
+                    product.Images = new List<ProductImage>();
+                    
+                    foreach (var file in additionalFiles)
+                    {
+                        if (file.Length > 0)
+                        {
+                            string fileName = Path.GetFileName(file.FileName);
+                            string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", fileName);
+                            
+                            using (FileStream fs = new FileStream(filePath, FileMode.Create))
+                            {
+                                await file.CopyToAsync(fs);
+                            }
+                            
+                            product.Images.Add(new ProductImage
+                            {
+                                ImagePath = fileName,
+                                IsMain = product.Pic == null && product.Images.Count == 0 // First image is main if no main image
+                            });
+                            
+                            // Set the first additional image as main pic if no main pic was uploaded
+                            if (product.Pic == null && product.Images.Count == 1)
+                            {
+                                product.Pic = fileName;
+                            }
+                        }
                     }
                 }
             }
+            
             if (ModelState.IsValid)
             {
                 // Set available quantity equal to total quantity initially
@@ -218,7 +265,7 @@ namespace Ali_Store.Controllers
                 return NotFound();
             }
 
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.Include(p => p.Images).FirstOrDefaultAsync(p => p.Id == id);
             if (product == null)
             {
                 return NotFound();
@@ -242,57 +289,110 @@ namespace Ali_Store.Controllers
             {
                 try
                 {
-                    // Handle image file upload
+                    // Handle main image file upload
                     if (Request.Form.Files.Count > 0)
                     {
-                        var file = Request.Form.Files.FirstOrDefault(f => f.Name == "ImageFile");
-                        if (file != null && file.Length > 0)
+                        var mainFile = Request.Form.Files.FirstOrDefault(f => f.Name == "ImageFile");
+                        if (mainFile != null && mainFile.Length > 0)
                         {
                             // Generate a unique filename to avoid overwrites
-                            string fileName = Path.GetFileName(file.FileName);
+                            string fileName = Path.GetFileName(mainFile.FileName);
                             
                             // Save the file to the images folder
                             string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", fileName);
                             using (FileStream fs = new FileStream(filePath, FileMode.Create))
                             {
-                                await file.CopyToAsync(fs);
+                                await mainFile.CopyToAsync(fs);
                             }
                             
                             // Update the product's Pic property with the new filename
                             product.Pic = fileName;
                         }
+                        
+                        // Handle additional images
+                        var additionalFiles = Request.Form.Files.Where(f => f.Name.StartsWith("AdditionalImages"));
+                        if (additionalFiles.Any())
+                        {
+                            // Get existing product with images to manage them
+                            var existingProduct = await _context.Products
+                                .Include(p => p.Images)
+                                .FirstOrDefaultAsync(p => p.Id == id);
+                            
+                            foreach (var file in additionalFiles)
+                            {
+                                if (file.Length > 0)
+                                {
+                                    string fileName = Path.GetFileName(file.FileName);
+                                    string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "Images", fileName);
+                                    
+                                    using (FileStream fs = new FileStream(filePath, FileMode.Create))
+                                    {
+                                        await file.CopyToAsync(fs);
+                                    }
+                                    
+                                    existingProduct.Images.Add(new ProductImage
+                                    {
+                                        ImagePath = fileName,
+                                        IsMain = false
+                                    });
+                                }
+                            }
+                            
+                            // Save the new images
+                            await _context.SaveChangesAsync();
+                        }
+                    }
+                    
+                    // Check if any images are marked for deletion
+                    if (Request.Form.ContainsKey("DeleteImageIds"))
+                    {
+                        var deleteImageIds = Request.Form["DeleteImageIds"].ToString().Split(',')
+                            .Where(id => !string.IsNullOrEmpty(id))
+                            .Select(int.Parse)
+                            .ToList();
+                        
+                        if (deleteImageIds.Any())
+                        {
+                            var imagesToDelete = await _context.ProductImages
+                                .Where(img => deleteImageIds.Contains(img.Id) && img.ProductId == id)
+                                .ToListAsync();
+                            
+                            _context.ProductImages.RemoveRange(imagesToDelete);
+                            await _context.SaveChangesAsync();
+                        }
                     }
                     
                     // Check if AvailableQuantity has changed
-                    var existingProduct = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == product.Id);
-                    if (existingProduct != null)
+                    var productFromDb = await _context.Products.AsNoTracking().FirstOrDefaultAsync(p => p.Id == product.Id);
+                    
+                    if (productFromDb != null && productFromDb.AvailableQuantity != product.AvailableQuantity)
                     {
-                        // If available quantity is now zero, mark product as sold
-                        if (product.AvailableQuantity <= 0)
-                        {
-                            product.IsSall = true;
-                        }
-                        // If available quantity has increased, make sure product is not marked as sold
-                        else if (product.AvailableQuantity > 0 && existingProduct.AvailableQuantity <= 0)
-                        {
-                            product.IsSall = false;
-                        }
+                        // Calculate the difference
+                        int quantityDifference = product.AvailableQuantity - productFromDb.AvailableQuantity;
+                        
+                        // Update the total quantity accordingly
+                        product.Quantity = productFromDb.Quantity + quantityDifference;
                     }
-
+                    
                     _context.Update(product);
                     await _context.SaveChangesAsync();
+                    
+                    TempData["ToastMessage"] = "Product updated successfully!";
+                    TempData["ToastType"] = "success";
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-
+                    if (!ProductExists(product.Id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
                         throw;
+                    }
                 }
-                TempData["ToastMessage"] = "Product updated successfully!"; 
-                TempData["ToastType"] = "success";
-                return RedirectToAction("index", "Products");
+                return RedirectToAction(nameof(Index));
             }
-            TempData["ToastMessage"] = "Product update failed!";
-            TempData["ToastType"] = "error";
             return View(product);
         }
 
