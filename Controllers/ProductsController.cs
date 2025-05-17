@@ -22,10 +22,15 @@ namespace Ali_Store.Controllers
         {
             ViewBag.iSlaptop = false;
             var U_id = HttpContext.Session.GetInt32("User_id");
-            // if(U_id == null) {
-            //     return RedirectToAction("Login", "");
-            // }
-            ViewBag.IsAdmin = U_id == 1;
+            var isAdmin = U_id == 1;
+            ViewBag.IsAdmin = isAdmin;
+            
+            // If admin, load the cancellation hours setting
+            if (isAdmin)
+            {
+                var settings = await GetOrCreateAdminSettings();
+                ViewBag.DefaultCancellationHours = settings.DefaultCancellationHours;
+            }
 
             IQueryable<Product> productsQuery = _context.Products.Include(p => p.Rates);
 
@@ -441,6 +446,11 @@ namespace Ali_Store.Controllers
             if(U_id == null) {
                 return RedirectToAction("Login", "");
             }
+            
+            // Get admin settings for cancellation hours
+            var settings = await GetOrCreateAdminSettings();
+            ViewBag.CancellationHours = settings.DefaultCancellationHours;
+            
             var orders = await _context.Orders
                 .Include(o => o.User)
                 .Include(o => o.OrderItems)
@@ -448,13 +458,24 @@ namespace Ali_Store.Controllers
                 .ToListAsync();
 
             if(U_id != 1) {
-                    orders = await _context.Orders
+                orders = await _context.Orders
                     .Include(o => o.User)
                     .Include(o => o.OrderItems)
                     .ThenInclude(oi => oi.Product)
                     .Where(o => o.User.Id == U_id)
                     .ToListAsync();
             }
+            
+            // For each order, calculate if it's within cancellation window
+            foreach (var order in orders)
+            {
+                // Ensure the CancellationHours is set (use default if not)
+                if (order.CancellationHours == 0)
+                {
+                    order.CancellationHours = settings.DefaultCancellationHours;
+                }
+            }
+            
             return View(orders);
         }
 
@@ -835,6 +856,129 @@ namespace Ali_Store.Controllers
                 streetAddress = user.StreetAddress,
                 city = user.City
             });
+        }
+
+        // Add method to initialize and fetch admin settings
+        private async Task<AdminSettings> GetOrCreateAdminSettings()
+        {
+            var settings = await _context.AdminSettings.FirstOrDefaultAsync();
+            if (settings == null)
+            {
+                settings = new AdminSettings { DefaultCancellationHours = 24 }; // Default 24 hours
+                _context.AdminSettings.Add(settings);
+                await _context.SaveChangesAsync();
+            }
+            return settings;
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateCancellationHours(int hours)
+        {
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId != 1) // Admin check
+            {
+                TempData["ToastMessage"] = "Only administrators can change this setting.";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Index");
+            }
+            
+            if (hours < 1 || hours > 168) // Validate input (1 hour to 7 days)
+            {
+                TempData["ToastMessage"] = "Cancellation hours must be between 1 and 168 (7 days).";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Index");
+            }
+            
+            var settings = await GetOrCreateAdminSettings();
+            settings.DefaultCancellationHours = hours;
+            _context.Update(settings);
+            await _context.SaveChangesAsync();
+            
+            TempData["ToastMessage"] = $"Order cancellation time set to {hours} hours.";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Index");
+        }
+        
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> CancelOrder(int id)
+        {
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "");
+            }
+            
+            var order = await _context.Orders
+                .Include(o => o.OrderItems)
+                .ThenInclude(oi => oi.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
+                
+            if (order == null)
+            {
+                TempData["ToastMessage"] = "Order not found.";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Orders");
+            }
+            
+            // Check if user is admin or the order belongs to the current user
+            if (userId != 1 && order.UserId != userId.Value)
+            {
+                TempData["ToastMessage"] = "You don't have permission to cancel this order.";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Orders");
+            }
+            
+            // If not admin, check if order is still within cancellation window
+            if (userId != 1 && !order.CanBeCanceled)
+            {
+                TempData["ToastMessage"] = $"This order can no longer be cancelled. The cancellation window has expired.";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Orders");
+            }
+            
+            // Process cancellation
+            // 1. Return funds to user
+            var user = await _context.Users.FindAsync(order.UserId);
+            var adminUser = await _context.Users.FindAsync(1);
+            
+            if (user != null && adminUser != null)
+            {
+                user.Amount += order.TotalPrice;
+                adminUser.Amount -= order.TotalPrice;
+                
+                _context.Users.Update(user);
+                _context.Users.Update(adminUser);
+            }
+            
+            // 2. Return products to inventory
+            foreach (var item in order.OrderItems)
+            {
+                var product = item.Product;
+                if (product != null)
+                {
+                    product.AvailableQuantity += item.Quantity;
+                    
+                    // If product was marked as sold but now has quantity, mark as available
+                    if (product.IsSall == true && product.AvailableQuantity > 0)
+                    {
+                        product.IsSall = false;
+                    }
+                    
+                    _context.Products.Update(product);
+                }
+            }
+            
+            // 3. Mark order as cancelled
+            order.Status = OrderStatus.Canceled;
+            _context.Orders.Update(order);
+            
+            await _context.SaveChangesAsync();
+            
+            TempData["ToastMessage"] = "Order cancelled successfully. Your account has been credited with the refund amount.";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Orders");
         }
     }
 }
