@@ -72,22 +72,26 @@ namespace Ali_Store.Controllers
         [HttpPost]
         public async Task<IActionResult> Login([Bind("Id,EMail,Password")] _User _User)
         {
-            int id = 0;
-            var Res = _context.Users.ToList();
-            foreach (var item in Res)
+            // Check if email exists first
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.EMail == _User.EMail);
+            
+            // User with this email not found
+            if (user == null)
             {
-                if (_User.EMail == item.EMail && _User.Password == item.Password)
-                {
-                    id = item.Id;
-                    break;
-                }
+                ModelState.AddModelError("EMail", "User with this email does not exist");
+                return View(_User);
             }
-            if (id != 0)
+            
+            // Check password
+            if (user.Password != _User.Password)
             {
-                HttpContext.Session.SetInt32("User_id", id);
-                return RedirectToAction("index", "Products");
+                ModelState.AddModelError("Password", "Incorrect password");
+                return View(_User);
             }
-            return View();
+            
+            // Successful login
+            HttpContext.Session.SetInt32("User_id", user.Id);
+            return RedirectToAction("index", "Products");
         }
 
         // GET: _User/Edit/5
