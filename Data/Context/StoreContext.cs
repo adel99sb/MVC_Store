@@ -12,6 +12,8 @@ namespace Ali_Store.Data.Context
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Offer> Offers { get; set; }
         public DbSet<Rate> Rates { get; set; }
+        public DbSet<Cart> Carts { get; set; }
+        public DbSet<CartItem> CartItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -19,6 +21,21 @@ namespace Ali_Store.Data.Context
                 .HasOne(r => r.Product)
                 .WithMany(p => p.Rates)
                 .HasForeignKey(r => r.ProductId);
+                
+            modelBuilder.Entity<Cart>()
+                .HasOne(c => c.User)
+                .WithOne()
+                .HasForeignKey<Cart>(c => c.UserId);
+                
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Product)
+                .WithMany()
+                .HasForeignKey(ci => ci.ProductId);
+                
+            modelBuilder.Entity<CartItem>()
+                .HasOne(ci => ci.Cart)
+                .WithMany(c => c.Items)
+                .HasForeignKey(ci => ci.CartId);
             //modelBuilder.Entity<Order>()
             //    .HasOne(o => o.) // Define the navigation property
             //    .WithMany(u => u.) // Define the inverse relationship

@@ -333,15 +333,24 @@
                         {
                             if(Model.IsSall == false)
                             {
-                                <button class="btn btn-primary">
-                                    <a asp-action="AddToCart" asp-controller="Products" asp-route-productId="@Model?.Id">
+                                <form asp-action="AddToCart" asp-controller="Products" method="post" class="mb-3">
+                                    <input type="hidden" name="productId" value="@Model.Id" />
+                                    <div class="d-flex align-items-center mb-3">
+                                        <label for="quantity" class="me-3">Quantity:</label>
+                                        <div class="input-group" style="width: 150px;">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="decrementQuantity()">-</button>
+                                            <input type="number" id="quantity" name="quantity" value="1" min="1" class="form-control text-center" required />
+                                            <button type="button" class="btn btn-outline-secondary" onclick="incrementQuantity()">+</button>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-cart-plus" viewBox="0 0 16 16" style="margin-right: 5px;">
                                             <path d="M9 5.5a.5.5 0 0 0-1 0V7H6.5a.5.5 0 0 0 0 1H8v1.5a.5.5 0 0 0 1 0V8h1.5a.5.5 0 0 0 0-1H9V5.5z"/>
                                             <path d="M.5 1a.5.5 0 0 0 0 1h1.11l.401 1.607 1.498 7.985A.5.5 0 0 0 4 12h1a2 2 0 1 0 0 1H2a.5.5 0 0 0 0-1h2.5a.5.5 0 0 0 .5-.5v-.5H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5zM3.102 4l1.313 7h8.17l1.313-7H3.102zM5 12a2 2 0 1 0 0 1 2 2 0 0 0 0-1zm7 0a2 2 0 1 0 0 1 2 2 0 0 0 0-1z"/>
                                         </svg>
                                         Add to Cart
-                                    </a>
-                                </button>
+                                    </button>
+                                </form>
                             }
                             else
                             {
@@ -446,6 +455,11 @@
                                 {
                                     <li class="offer-item">
                                         <span class="offer-price">$@offer.Price</span>
+                                        <a asp-action="EditOffer" asp-route-id="@offer.Id" class="btn btn-sm">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pen" viewBox="0 0 16 16">
+                                                <path d="m13.498.795.149-.149a1.207 1.207 0 0 1 1.707 0l.149.149a1.207 1.207 0 0 1 0 1.707l-.149.149-1.707-1.707zm-1.06 1.06L1 13.293V15h1.707L14.207 3.854l-1.707-1.707z"/>
+                                            </svg>
+                                        </a>
                                     </li>
                                 }
                             </ul>
@@ -472,3 +486,21 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        function incrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value, 10);
+            quantityInput.value = currentValue + 1;
+        }
+        
+        function decrementQuantity() {
+            const quantityInput = document.getElementById('quantity');
+            const currentValue = parseInt(quantityInput.value, 10);
+            if (currentValue > 1) {
+                quantityInput.value = currentValue - 1;
+            }
+        }
+    </script>
+}

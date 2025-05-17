@@ -294,16 +294,6 @@
                                     <button class="btn btn-details">
                                         <a asp-action="Details" asp-route-id="@item.Id">Show Details</a>
                                     </button>
-                                    @if(userId != null && userId != 1) {
-                                        @if(item.IsSall == true) {
-                                            <button class="btn btn-sold">Sold Out</button>
-                                        }
-                                        else {
-                                            <button class="btn btn-cart">
-                                                <a asp-action="AddToCart" asp-controller="Products" asp-route-productId="@item.Id">Add to Cart</a>
-                                            </button>
-                                        }
-                                    }
                                 </div>
                             </div>
                         </div>
@@ -350,7 +340,22 @@
                 // do something with the selected value
             });
         });
-
+        
+        function decrementQuantity(btn) {
+            const input = btn.parentNode.querySelector('input');
+            const currentValue = parseInt(input.value, 10);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+        
+        function incrementQuantity(btn) {
+            const input = btn.parentNode.querySelector('input');
+            const currentValue = parseInt(input.value, 10);
+            if (currentValue < 99) {
+                input.value = currentValue + 1;
+            }
+        }
     </script>
 </body>
 <style>
@@ -719,5 +724,78 @@
 
     .btn-outline-secondary:hover {
         transform: translateY(-2px);
+    }
+
+    .add-to-cart-btn {
+        background: none;
+        color: white;
+        border: none;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: all 0.2s ease;
+    }
+    
+    .add-to-cart-btn:hover {
+        transform: scale(1.05);
+    }
+    
+    .cart-action-container {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        width: 100%;
+    }
+    
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.15);
+        border-radius: 6px;
+        padding: 2px;
+        margin-bottom: 4px;
+    }
+    
+    .qty-btn {
+        background: rgba(255, 255, 255, 0.2);
+        border: none;
+        color: white;
+        width: 28px;
+        height: 28px;
+        border-radius: 4px;
+        font-size: 16px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .qty-btn:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+    
+    .qty-input {
+        background: none;
+        border: none;
+        color: white;
+        width: 32px;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        -moz-appearance: textfield;
+    }
+    
+    .qty-input::-webkit-outer-spin-button,
+    .qty-input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
     }
 </style>

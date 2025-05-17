@@ -344,6 +344,48 @@ namespace Ali_Store.Controllers
             return RedirectToAction("Details", new { id = productId });
         }
 
+        public async Task<IActionResult> EditOffer(int id)
+        {
+            var offer = await _context.Offers
+                .Include(o => o.Product)
+                .FirstOrDefaultAsync(o => o.Id == id);
+                
+            if (offer == null)
+            {
+                return NotFound("Offer not found.");
+            }
+
+            return View(offer);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> EditOffer(int id, decimal newPrice)
+        {
+            var offer = await _context.Offers.FindAsync(id);
+            if (offer == null)
+            {
+                return NotFound("Offer not found.");
+            }
+
+            offer.Price = newPrice;
+            
+            // Update the product's NewPrice property as well
+            var product = await _context.Products.FindAsync(offer.ProductId);
+            if (product != null)
+            {
+                product.NewPrice = newPrice;
+                _context.Products.Update(product);
+            }
+
+            _context.Offers.Update(offer);
+            await _context.SaveChangesAsync();
+            
+            TempData["ToastMessage"] = "Offer updated successfully!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Details", new { id = offer.ProductId });
+        }
+
         public async Task<IActionResult> Orders()
         {
             var U_id = HttpContext.Session.GetInt32("User_id");
@@ -394,51 +436,99 @@ namespace Ali_Store.Controllers
             return RedirectToAction("Orders");
         }
 
-        public IActionResult Cart()
+        public async Task<IActionResult> Cart()
         {
-            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "");
+            }
+            
+            var cart = await _context.Carts
+                .Include(c => c.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+                
+            if (cart == null)
+            {
+                cart = new Cart { UserId = userId.Value };
+                _context.Carts.Add(cart);
+                await _context.SaveChangesAsync();
+            }
+            
             return View(cart);
         }
 
-        public IActionResult AddToCart(int productId)
+        public async Task<IActionResult> AddToCart(int productId, int quantity = 1)
         {
-            var product = _context.Products.Find(productId);
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "");
+            }
+            
+            var product = await _context.Products.FindAsync(productId);
             if (product == null)
             {
                 return NotFound("Product not found.");
             }
 
-            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
-            var cartItem = cart.Items.FirstOrDefault(i => i.Product.Id == productId);
+            var cart = await _context.Carts
+                .Include(c => c.Items)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+                
+            if (cart == null)
+            {
+                cart = new Cart { UserId = userId.Value };
+                _context.Carts.Add(cart);
+                await _context.SaveChangesAsync();
+            }
+
+            var cartItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
             if (cartItem != null)
             {
-                cart.Quantity++;
-            }
-            if(product.NewPrice != null)
-            {
-                product.Price = (float)product.NewPrice;
+                cartItem.Quantity += quantity;
+                _context.CartItems.Update(cartItem);
             }
             else
             {
-                cart.Items.Add(new CartItem { Product = product});
+                cartItem = new CartItem 
+                { 
+                    CartId = cart.Id,
+                    ProductId = productId,
+                    Quantity = quantity
+                };
+                _context.CartItems.Add(cartItem);
             }
 
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
+            await _context.SaveChangesAsync();
             TempData["ToastMessage"] = "Product added to cart!";
             TempData["ToastType"] = "success";
             return RedirectToAction("index", "Products");
         }
 
-        public IActionResult RemoveFromCart(int productId)
+        public async Task<IActionResult> RemoveFromCart(int productId)
         {
-            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
-            var cartItem = cart.Items.FirstOrDefault(i => i.Product.Id == productId);
-            if (cartItem != null)
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
             {
-                cart.Items.Remove(cartItem);
+                return RedirectToAction("Login", "");
+            }
+            
+            var cart = await _context.Carts
+                .Include(c => c.Items)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+                
+            if (cart != null)
+            {
+                var cartItem = cart.Items.FirstOrDefault(i => i.ProductId == productId);
+                if (cartItem != null)
+                {
+                    _context.CartItems.Remove(cartItem);
+                    await _context.SaveChangesAsync();
+                }
             }
 
-            HttpContext.Session.SetObjectAsJson("Cart", cart);
             TempData["ToastMessage"] = "Product removed from cart!";
             TempData["ToastType"] = "success";
             return RedirectToAction("Cart");
@@ -446,21 +536,25 @@ namespace Ali_Store.Controllers
 
         public async Task<IActionResult> PurchaseCart()
         {
-            var U_id = HttpContext.Session.GetInt32("User_id");
-            if(U_id == null) {
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
+            {
                 return RedirectToAction("Login", "");
             }
 
-            var cart = HttpContext.Session.GetObjectFromJson<Cart>("Cart") ?? new Cart();
-            if (!cart.Items.Any())
+            var cart = await _context.Carts
+                .Include(c => c.Items)
+                .ThenInclude(i => i.Product)
+                .FirstOrDefaultAsync(c => c.UserId == userId);
+                
+            if (cart == null || !cart.Items.Any())
             {
                 TempData["ToastMessage"] = "Cart is empty!";
                 TempData["ToastType"] = "error";
                 return RedirectToAction("Cart");
             }
             
-
-            var user = _context.Users.Find(U_id);
+            var user = await _context.Users.FindAsync(userId);
             if (user == null)
             {
                 return NotFound("User not found.");
@@ -473,34 +567,56 @@ namespace Ali_Store.Controllers
                 return RedirectToAction("Cart");
             }
 
+            // Get the admin user for payment
+            var adminUser = await _context.Users.FindAsync(1);
+            if (adminUser == null)
+            {
+                TempData["ToastMessage"] = "System error: Admin account not found";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Cart");
+            }
+
+            int totalItems = cart.Items.Sum(i => i.Quantity);
+            
             var order = new Order
             {
                 User = user,
                 Date = DateTime.Now,
                 TotalPrice = cart.TotalPrice,
-                NumberOfItems = cart.Items.Count
+                NumberOfItems = totalItems
             };
+            
             user.Amount -= order.TotalPrice;
+            adminUser.Amount += order.TotalPrice;
+            
             _context.Users.Update(user);
+            _context.Users.Update(adminUser);
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
             foreach (var item in cart.Items)
             {
-                var prduct = _context.Products.Find(item.Product.Id);
-                prduct.IsSall = true;
-                var orderItem = new OrderItem
+                var product = await _context.Products.FindAsync(item.ProductId);
+                product.IsSall = true;
+                
+                // Create an OrderItem for each quantity
+                for (int i = 0; i < item.Quantity; i++)
                 {
-                    OrderId = order.Id,
-                    ProductId = item.Product.Id
-                };
-                _context.Products.Update(prduct);
-                _context.OrderItems.Add(orderItem);
+                    var orderItem = new OrderItem
+                    {
+                        OrderId = order.Id,
+                        ProductId = item.ProductId
+                    };
+                    _context.OrderItems.Add(orderItem);
+                }
+                
+                _context.Products.Update(product);
             }
 
+            // Clear the cart
+            _context.CartItems.RemoveRange(cart.Items);
             await _context.SaveChangesAsync();
 
-            HttpContext.Session.Remove("Cart");
             TempData["ToastMessage"] = "Purchase successful!";
             TempData["ToastType"] = "success";
             return RedirectToAction("Index");
@@ -536,6 +652,39 @@ namespace Ali_Store.Controllers
             TempData["ToastType"] = "info";
             
             return View("Index", products);
+        }
+
+        public async Task<IActionResult> UpdateQuantity(int cartItemId, int quantity)
+        {
+            if (quantity < 1)
+            {
+                TempData["ToastMessage"] = "Quantity must be at least 1!";
+                TempData["ToastType"] = "error";
+                return RedirectToAction("Cart");
+            }
+            
+            var userId = HttpContext.Session.GetInt32("User_id");
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "");
+            }
+            
+            var cartItem = await _context.CartItems
+                .Include(ci => ci.Cart)
+                .FirstOrDefaultAsync(ci => ci.Id == cartItemId && ci.Cart.UserId == userId);
+                
+            if (cartItem == null)
+            {
+                return NotFound("Cart item not found.");
+            }
+            
+            cartItem.Quantity = quantity;
+            _context.CartItems.Update(cartItem);
+            await _context.SaveChangesAsync();
+            
+            TempData["ToastMessage"] = "Quantity updated!";
+            TempData["ToastType"] = "success";
+            return RedirectToAction("Cart");
         }
     }
 }
