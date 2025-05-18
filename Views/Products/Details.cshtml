@@ -460,13 +460,13 @@
                         Customer Reviews
                     </div>
                     
-                    @if (Model.Rates != null && Model.Rates.Any())
+                    @if (Model != null && Model.Rates != null && Model.Rates.Any())
                     {
                         <ul class="ratings-list">
                             @foreach (var rating in Model.Rates)
                             {
                                 <li class="rating-item">
-                                    <span class="rating-user">@rating.User.FirstName</span>
+                                    <span class="rating-user">@(rating.User != null ? rating.User.FirstName : "Anonymous")</span>
                                     <span class="rating-stars">
                                         @for (int i = 0; i < (int)rating.RateTo5; i++)
                                         {
