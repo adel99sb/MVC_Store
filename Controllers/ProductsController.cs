@@ -728,7 +728,7 @@ namespace Ali_Store.Controllers
             return RedirectToAction("Cart");
         }
 
-        public async Task<IActionResult> PurchaseCart(string FirstName, string LastName, string PhoneNumber, string StreetAddress, string City)
+        public async Task<IActionResult> PurchaseCart(string FirstName, string LastName, string PhoneNumber, string StreetAddress, string City, string PaymentMethod)
         {
             var userId = HttpContext.Session.GetInt32("User_id");
             if (userId == null)
@@ -801,13 +801,6 @@ namespace Ali_Store.Controllers
             user.StreetAddress = StreetAddress;
             user.City = City;
             
-            if (user.Amount < cart.TotalPrice)
-            {
-                TempData["ToastMessage"] = "Insufficient balance!";
-                TempData["ToastType"] = "error";
-                return RedirectToAction("Cart");
-            }
-
             // Get the admin user for payment
             var adminUser = await _context.Users.FindAsync(1);
             if (adminUser == null)
@@ -824,14 +817,33 @@ namespace Ali_Store.Controllers
                 User = user,
                 Date = DateTime.Now,
                 TotalPrice = cart.TotalPrice,
-                NumberOfItems = totalItems
+                NumberOfItems = totalItems,
+                PaymentMethod = PaymentMethod == "FromBalance" ? Data.Model.PaymentMethod.FromBalance : Data.Model.PaymentMethod.Cash
             };
             
-            user.Amount -= order.TotalPrice;
-            adminUser.Amount += order.TotalPrice;
+            // If payment method is Cash, don't deduct from user balance
+            if (order.PaymentMethod == Data.Model.PaymentMethod.Cash) 
+            {
+                // Only process the order without deducting balance
+            }
+            else 
+            {
+                // Check if user has enough balance
+                if (user.Amount < order.TotalPrice)
+                {
+                    TempData["ToastMessage"] = "Insufficient balance!";
+                    TempData["ToastType"] = "error";
+                    return RedirectToAction("Cart");
+                }
+                
+                // Deduct from user balance and add to admin balance
+                user.Amount -= order.TotalPrice;
+                adminUser.Amount += order.TotalPrice;
+                
+                _context.Users.Update(user);
+                _context.Users.Update(adminUser);
+            }
             
-            _context.Users.Update(user);
-            _context.Users.Update(adminUser);
             _context.Orders.Add(order);
             await _context.SaveChangesAsync();
 
@@ -1039,17 +1051,20 @@ namespace Ali_Store.Controllers
             }
             
             // Process cancellation
-            // 1. Return funds to user
-            var user = await _context.Users.FindAsync(order.UserId);
-            var adminUser = await _context.Users.FindAsync(1);
-            
-            if (user != null && adminUser != null)
+            // 1. Return funds to user if the payment method is from balance
+            if(order.PaymentMethod == Data.Model.PaymentMethod.FromBalance)
             {
-                user.Amount += order.TotalPrice;
-                adminUser.Amount -= order.TotalPrice;
+                var user = await _context.Users.FindAsync(order.UserId);
+                var adminUser = await _context.Users.FindAsync(1);
                 
-                _context.Users.Update(user);
-                _context.Users.Update(adminUser);
+                if (user != null && adminUser != null)
+                {
+                    user.Amount += order.TotalPrice;
+                    adminUser.Amount -= order.TotalPrice;
+                    
+                    _context.Users.Update(user);
+                    _context.Users.Update(adminUser);
+                }
             }
             
             // 2. Return products to inventory

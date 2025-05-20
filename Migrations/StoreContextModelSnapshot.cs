@@ -124,6 +124,9 @@ namespace Ali_Store.Migrations
                     b.Property<int>("NumberOfItems")
                         .HasColumnType("int");
 
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("int");
+
                     b.Property<int>("Status")
                         .HasColumnType("int");
 

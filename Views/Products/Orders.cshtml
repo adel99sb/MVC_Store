@@ -220,6 +220,7 @@
                             <th>Date</th>
                             <th>Total</th>
                             <th>Products</th>
+                            <th>Payment</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -263,6 +264,27 @@
                                             </li>
                                         }
                                     </ul>
+                                </td>
+                                <td>
+                                    @if(order.PaymentMethod == Ali_Store.Data.Model.PaymentMethod.Cash)
+                                    {
+                                        <span class="badge bg-secondary">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-cash me-1" viewBox="0 0 16 16">
+                                                <path d="M8 10a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"/>
+                                                <path d="M0 4a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V4zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V6a2 2 0 0 1-2-2H3z"/>
+                                            </svg>
+                                            Cash on Delivery
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-info">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-wallet me-1" viewBox="0 0 16 16">
+                                                <path d="M0 3a2 2 0 0 1 2-2h13.5a.5.5 0 0 1 0 1H15v2a1 1 0 0 1 1 1v8.5a1.5 1.5 0 0 1-1.5 1.5h-12A2.5 2.5 0 0 1 0 12.5V3zm1 1.732V12.5A1.5 1.5 0 0 0 2.5 14h12a.5.5 0 0 0 .5-.5V5H2a1.99 1.99 0 0 1-1-.268zM1 3a1 1 0 0 0 1 1h12V2H2a1 1 0 0 0-1 1z"/>
+                                            </svg>
+                                            From Balance
+                                        </span>
+                                    }
                                 </td>
                                 <td>
                                     @if(order.Status == Ali_Store.Data.Model.OrderStatus.Active)

@@ -7,6 +7,12 @@
         Completed
     }
 
+    public enum PaymentMethod
+    {
+        Cash,
+        FromBalance
+    }
+
     public class Order
     {
         public int Id { get; set; }
@@ -15,6 +21,7 @@
         public DateTime Date { get; set; }
         public float TotalPrice { get; set; }
         public int NumberOfItems { get; set; }
+        public PaymentMethod PaymentMethod { get; set; } = PaymentMethod.Cash; // Default to Cash
         public List<OrderItem> OrderItems { get; set; } = new List<OrderItem>();
         public int CancellationHours { get; set; } = 24; // Default 24 hours for cancellation
         public OrderStatus Status { get; set; } = OrderStatus.Active;
