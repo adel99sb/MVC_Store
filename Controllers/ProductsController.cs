@@ -64,6 +64,7 @@ namespace Ali_Store.Controllers
             var product = await _context.Products
                 .Include(p => p.Rates)
                 .Include(p => p.Images)
+                .Include(p => p.Offers)
                 .FirstOrDefaultAsync(m => m.Id == id);
                 
             if (product == null)
